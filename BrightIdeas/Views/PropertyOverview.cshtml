@@ -1,0 +1,94 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Velocity.cshtml";
+	
+	// If the editor has not explicitly provided the "Page title" property page 
+    // then just show the name of the page otherwise show the provided title
+    var pageTitle = string.IsNullOrWhiteSpace(CurrentPage.Title)
+        ? CurrentPage.Name
+        : CurrentPage.Title;
+	
+	// Model.Content is the current page that we're on
+    // AncestorsOrSelf is all of the ancestors this page has in the tree
+    // (1) means: go up to level 1 and stop looking for more ancestors when you get there
+    // First() gets the first ancestor found (the home page, on level 1)
+    var homePage = CurrentPage.AncestorsOrSelf(1).First(); 
+		
+	// Find all pages with document type alias umbNewsOverview
+    // We do that using the plural, umbNewsOverviews (note the extra "s" in the end)
+    // Then take the first one, as we know there will only be on news overview page
+    var propertyOverview = homePage.umbPropertyOverviews.First();
+
+    // Similar to above: find all pages with document type umbNewsItem under the news overview page
+    var propertyItems = propertyOverview.umbPropertyDetails;
+	
+	var lat = CurrentPage.Map.Latitude;
+	  var lng = CurrentPage.Map.Longitude;
+	  var zoom = CurrentPage.Map.Zoom;
+	
+	// Only works if format is Json or Csv with Search
+	  var searchtyped = CurrentPage.Map.SearchTyped;	
+}
+
+<div class="col-sm-12">
+	@Umbraco.RenderMacro("ezSearch", new {rootContentNodeId="1334", rootMediaNodeId="", indexType="CONTENT", searchFields= "addressStreet", previewFields= "pageTitle, images", previewLength="", pageSize="9", hideFromSearchField="", searchFormLocation= "TOP" })
+	<div id="property-search-results" data-view="grid-view">
+		<div id="property-items" class="show-compare" data-view="grid-view" style="opacity: 1;">
+	<header>
+		<h2>@pageTitle</h2>
+		<p>@Umbraco.Field("bodyText", recursive: true)</p>
+	</header>
+		
+			<div class="row features">
+				@foreach (var item in propertyItems)
+				{
+					<section class="4u 12u(narrower) feature property-item">
+						<div class="image-wrapper first">
+							<a href="#" class="image featured"><img src="@item.images" alt="">
+								@if(item.Availabilty == "6")
+								{
+									<div class="corner_banner"><h2>sold stc</h2></div>
+								}
+							</a>
+						</div>
+						<header>
+							<h3>@item.DisplayAddress</h3>
+						</header>
+						<p>@Umbraco.Truncate(item.MainSummary, 100)</p>
+						<div class="property-content">
+							<div class="property-meta">
+								<div>
+									<div class="meta-title"><i class="fa fa-camera"></i></div>
+									<div class="meta-data" title="" data-original-title="Photos">
+										1
+									</div>
+								</div>
+								<div>
+									<div class="meta-title"><i class="fa fa-bed"></i></div>
+									<div class="meta-data" data-toggle="" title="">@item.PropertyBedrooms Bedrooms</div>
+								</div>
+								<div>
+									<div class="meta-title"><i class="fa fa-bath"></i></div>
+									<div class="meta-data" title="">1 Bathroom</div>
+								</div>
+								<div>
+									<div class="meta-title"><i class="icon icon_floorplan"></i></div>
+									<div class="meta-data" title="" data-original-title="Floorplan">
+										1
+									</div>
+								</div>
+							</div>
+							<div class="property-price">
+								<span class="property-status" data-toggle="" title="" data-original-title="Status">Sold STC</span>
+								<i class="add-to-favorites fa fa-heart-o" data-fav-id="1231" data-toggle="tooltip" title="" data-original-title="Add To Favorites"></i>
+								<i class="fa fa-plus compare-property" data-compare-id="1231" data-toggle="tooltip" title="" data-original-title="Compare"></i>			
+								<div class="price-tag">£@string.Format("{0:##0.00}", item.Price)</div>
+							</div>
+							
+						</div>
+					</section>
+				}
+			</div>
+		</div>
+	</div>
+</div>

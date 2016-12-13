@@ -1,0 +1,46 @@
+@inherits UmbracoTemplatePage
+@{
+    // Model.Content is the current page that we're on
+    // AncestorsOrSelf is all of the ancestors this page has in the tree
+    // (1) means: go up to level 1 and stop looking for more ancestors when you get there
+    // First() gets the first ancestor found (the home page, on level 1)
+    var homePage = CurrentPage.AncestorsOrSelf(1).First();
+}
+
+<!-- Feature grid -->
+<div class="wrapper style2">
+	<article id="work">
+		<header>
+			<h2>Here's all the stuff I do.</h2>
+			<p>Odio turpis amet sed consequat eget posuere consequat.</p>
+		</header>
+		<div class="container">
+			<div class="row">
+				@foreach (var feature in homePage.Children.Where("featurePage"))
+				{
+					<div class="4u 12u(mobile)">
+						<section class="box style1">
+							<span class="icon featured @feature.FeatureIcon"></span>
+								<h3>@Html.Raw(Umbraco.ReplaceLineBreaksForHtml(feature.FeatureHeader))</h3>
+								<p>@Html.Raw(Umbraco.ReplaceLineBreaksForHtml(feature.FeatureText))</p>
+						</section>
+					
+						
+					</div>
+			@*<div class="4u 12u(mobile)">
+				<section id="@(feature.IsFirst() ? "first" : null)" class="@(feature.IsEven() ? "last" : "middle")">
+					<i class="icon featured @(feature.IsEven() ? "" : "alt") @feature.FeatureIcon"></i>
+					<header>
+						<h2>@Html.Raw(Umbraco.ReplaceLineBreaksForHtml(feature.FeatureHeader))</h2>
+					</header>
+						<p>@Html.Raw(Umbraco.ReplaceLineBreaksForHtml(feature.FeatureText))</p>
+				</section>
+			</div>*@
+			}	
+		</div>
+		<footer>
+			<p>Lorem ipsum dolor sit sapien vestibulum ipsum primis?</p>
+			<a href="#portfolio" class="button big scrolly">See some of my recent work</a>
+		</footer>
+	</article>					
+</div>

@@ -1,0 +1,185 @@
+﻿@inherits UmbracoTemplatePage
+@{
+    Layout = null;
+	
+	var homePage = CurrentPage.AncestorsOrSelf(1).First(); 
+}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Estate Agents In Chatteris - T Payne &amp; Co Estate AgentsT Payne &amp; Co Estate Agents @Umbraco.Field("title", altFieldAlias: "pageName")</title>
+    <title>Andrew Bright - Freelance Web Developer, @Umbraco.Field("title", altFieldAlias: "pageName") - @Umbraco.Field("siteName", recursive: true)</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="Andrew Bright">
+	<meta name="keywords" content="@Model.Content.GetPropertyValue("keywords")" />
+	<meta name="keywords" content="estate agents, chatteris, cambridgeshire, t payne &amp; co, estate agency, letting, sell house, move house, rent house, buy house">
+	<meta name="description" content="Tpayne &amp; Co Estate Agents in Chatteris, We don’t aim to make house moving complicated, or offer gimmicky promotions, just Estate Agency , pure and simple.">
+    <meta name="description" content="@Model.Content.GetPropertyValue("description")" />
+		
+	<meta property="og:title" content="Welcome to Bright Ideas - the home of Cambridgeshire-based freelance web developer Andrew Bright.">
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="http://www.brightsideas.co.uk">
+	<meta property="og:site_name" content="Bright Ideas - Freelance Developer">
+	<meta name="google-site-verification" content="777sWrqoaMrVga6wOzMor5hflxGfXnnxI-iuPKwhjBY" />
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,700|Open+Sans+Condensed:700" rel="stylesheet" />
+		
+	<!-- Favicons -->
+	<link rel="shortcut icon" href="~/images/logo_favicon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="~/images/logo_favicon.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="~/images/logo_favicon.png">
+	
+	<link rel="stylesheet" id="bootstrap-css" href="//netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" type="text/css" media="all">
+	@*<link rel="stylesheet" id="bootstrap-css" type="text/css" href="/css/usebootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="/css/main.css" />*@
+	<link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" id="style-css" href="/css/TPayne/style.css" type="text/css" media="all">
+		
+    <!--[if lte IE 9]><link rel="stylesheet" href="/css/ie9.css" /><![endif]-->
+    <!--[if lte IE 8]><script src="/scripts/html5shiv.js"></script><link rel="stylesheet" href="/css/ie8.css" /><![endif]-->
+    <!--[if lte IE 7]><link rel="stylesheet" href="/css/ie7.css" /><![endif]-->
+	
+	<script src="/scripts/jquery.min.js"></script>
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;key=AIzaSyDTAMIml0vjQfOhSlxeEIl3GmMYXbyCTww"></script>
+	<script type="text/javascript" src="/scripts/ajax-favorites-temporary.js"></script>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 400px;
+		/*width: 200px;*/
+      }
+
+	div[id^=map] #map-marker-container, div[id^=map] .map-marker-container {
+		position: relative;
+		max-width: 300px;
+		font-size: 14px;
+		background-color: #fff;
+		background-color: rgba(255, 255, 255, 0.9);
+		-webkit-transition: all 0.3s;
+		-moz-transition: all 0.3s;
+		-ms-transition: all 0.3s;
+		-o-transition: all 0.3s;
+		transition: all 0.3s;
+	}
+
+	div[id^=map] .cluster img {
+		max-width: 100%;
+		max-height: 100%;
+	}
+
+	div[id^=map] .cluster > div {
+		position: relative;
+		width: auto;
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+		font-size: 15px !important;
+		font-weight: 700 !important;
+		color: #fff !important;
+	}
+
+	div[id^=map] #map-marker-container img, div[id^=map] .map-marker-container img {
+		width: 100%;
+		height: auto;
+	}
+
+	div[id^=map] img {
+		max-width: none;
+		display: inline;
+	}
+      
+    </style>
+</head>
+<body onload="initMap()" class="page">
+	<header class="navbar">
+	  <div class="container">
+		  <div class="navbar-header">
+			<!-- Nav -->
+			<button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="sr-only">Skip navigation</span>
+				<span class="icon-bar"></span>
+			  	<span class="icon-bar"></span>
+			  	<span class="icon-bar"></span>
+			</button>
+
+			<div class="navbar-brand">
+				<a href="http://www.tpayneandco.co.uk/">
+				<img src="http://www.tpayneandco.co.uk/wp-content/uploads/2015/07/TPCbanner.png" alt="" style="height: 88px; opacity: 1;">
+				</a>
+			</div>
+
+			<div class="navbar-contact-details">
+				<div class="navbar-phone-number">01354 696700</div>
+					<div class="navbar-email">
+						<a href="mailto:info@tpayneandco.co.uk">info@tpayneandco.co.uk</a></div>
+					</div>
+					<div class="clearfix"></div>
+						<nav class="collapse navbar-collapse" role="navigation">
+					<div class="nav navbar-nav">
+						<ul id="menu-nav" class="clearfix">
+							<li id="menu-item-489" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-485 current_page_item menu-item-489">
+								<a href="http://www.tpayneandco.co.uk/">Home</a>
+							</li>
+							<li id="menu-item-299" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-299">
+								<a href="http://www.tpayneandco.co.uk/search/">View Properties</a>
+							</li>
+							<li id="menu-item-494" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-494">
+								<a href="http://www.tpayneandco.co.uk/contact-estate-agency-in-chatteris/">Contact Us</a>
+							</li>
+						</ul>
+					</div>				
+					<div id="toggle-navbar"><i class="icon-angle-right"></i></div>
+				</nav>
+
+			</div>
+	  </div> 
+</header>
+		<!-- Map -->			
+		<div id="map-wrapper">
+			<div id="map"></div>	
+		</div>
+		<!-- Main -->
+		<div class="container">
+			<div class="row">
+				@RenderBody()
+			</div>
+		</div>
+				
+		<!-- Footer -->
+		<footer id="footer">
+    			
+			<div id="footer-bottom">
+				<div class="container">
+					<div class="row">
+
+						<div class="col-sm-6">		
+							<div id="copyright">&copy; @DateTime.Now.Year @Umbraco.Field("copyright", recursive: true).</div>
+						</div>
+
+						<div class="col-sm-6 social-transparent">
+							@{ Html.RenderPartial("umbSocial"); }
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+		</footer>
+		<!-- /Footer -->
+	</div>
+	<!-- jQuery -->
+	<script src="/scripts/jquery.min.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
+	<script src="/scripts/jquery.dropotron.min.js"></script>
+	<script src="/scripts/skel.min.js"></script>
+	<script src="/scripts/util.js"></script>
+	<!--[if lte IE 8]><script src="/scripts/ie/respond.min.js"></script><![endif]-->
+	<script src="/scripts/main.js"></script>
+	
+	<!-- Custom theme -->
+	<script src="https://cdn.rawgit.com/googlemaps/v3-utility-library/master/infobox/src/infobox.js"></script>
+	<script type="text/javascript" src="/scripts/default.js"></script>
+	<script src="http://jawj.github.io/OverlappingMarkerSpiderfier/bin/oms.min.js"></script>
+	<script src="https://cdn.rawgit.com/googlemaps/v3-utility-library/master/markerclustererplus/src/markerclusterer.js"></script>
+									
+</body>
+</html>

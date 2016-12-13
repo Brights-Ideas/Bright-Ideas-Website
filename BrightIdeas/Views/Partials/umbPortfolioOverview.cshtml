@@ -1,0 +1,39 @@
+@inherits UmbracoTemplatePage
+@{
+    
+    // Model.Content is the current page that we're on
+    // AncestorsOrSelf is all of the ancestors this page has in the tree
+    // (1) means: go up to level 1 and stop looking for more ancestors when you get there
+    // First() gets the first ancestor found (the home page, on level 1)
+    var homePage = CurrentPage.AncestorsOrSelf(1).First();    
+    
+    // Find all pages with document type alias umbNewsOverview
+    // We do that using the plural, umbNewsOverviews (note the extra "s" in the end)
+    // Then take the first one, as we know there will only be on news overview page
+    var portfolioOverview = homePage.umbPortfolioOverviews.First();
+
+    // Similar to above: find all pages with document type umbNewsItem under the news overview page
+    var portfolioItems = portfolioOverview.umbPortfolioItems;
+
+}
+
+<div class="container">
+	<header>
+		<h2>My Portfolio</h2>
+	</header>
+					
+	<div class="row">									
+		@foreach (var item in portfolioItems)
+		{
+			<div class="4u 12u(mobile)">
+				<article class="box style2">
+					<a href="#" class="image featured"><img src="@item.Image" alt=""></a>
+					<h3><a href="#">@item.Title</a></h3>
+						<p>@Umbraco.Truncate(item.BodyText, 100)</p>
+						<a href="@item.Url" class="button">Learn More..</a>
+				</article>
+			</div>
+		}
+	</div>
+</div>
+<!-- /Portfolio overview -->

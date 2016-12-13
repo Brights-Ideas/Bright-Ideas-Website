@@ -1,0 +1,35 @@
+@inherits UmbracoTemplatePage
+@{
+	var homePage = CurrentPage.AncestorsOrSelf(1).First(); 
+	var media = Umbraco.Media(homePage.BannerBackgroundImage);
+}
+
+@if (homePage.HideBanner == false)
+{
+    <!-- Banner -->
+	<div class="wrapper style1 first">
+		<article class="container" id="top">
+			<div class="row">
+				<div class="4u 12u(mobile)">
+					<span class="image fit"><img src="images/pic00.jpg" alt=""></span>
+				</div>
+				<div class="8u 12u(mobile)">
+					<header>
+						<h1>Hi. I'm <strong>@Umbraco.Field("bannerHeader")</strong>.</h1>
+					</header>
+					<p>@Umbraco.Field("bannerText")</p>
+						<a href="#work" class="button big scrolly">Learn about what I do</a>
+				</div>
+			</div>
+		</article>
+	</div>
+	@*<section id="banner" style="background: url('@media.umbracoFile') center center;">
+		<header>
+			<h2>@Umbraco.Field("bannerHeader")</h2>
+			<p>@Umbraco.Field("bannerSubheader")</p>
+		</header>
+		<footer>
+			<a href="#first" class="button style2 scrolly">@Umbraco.Field("bannerLinkText")</a>
+		</footer>
+	</section>*@
+}

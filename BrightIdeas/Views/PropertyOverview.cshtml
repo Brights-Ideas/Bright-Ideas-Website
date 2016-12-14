@@ -21,17 +21,11 @@
 
     // Similar to above: find all pages with document type umbNewsItem under the news overview page
     var propertyItems = propertyOverview.umbPropertyDetails;
-	
-	var lat = CurrentPage.Map.Latitude;
-	  var lng = CurrentPage.Map.Longitude;
-	  var zoom = CurrentPage.Map.Zoom;
-	
-	// Only works if format is Json or Csv with Search
-	  var searchtyped = CurrentPage.Map.SearchTyped;	
+		
 }
 
 <div class="col-sm-12">
-	@Umbraco.RenderMacro("ezSearch", new {rootContentNodeId="1334", rootMediaNodeId="", indexType="CONTENT", searchFields= "addressStreet", previewFields= "pageTitle, images", previewLength="", pageSize="9", hideFromSearchField="", searchFormLocation= "TOP" })
+	@Umbraco.RenderMacro("ezSearch", new {rootContentNodeId= "1402", rootMediaNodeId="", indexType="CONTENT", searchFields= "regionID, availability, Availability, addressNumber ", previewFields= "pageTitle, images, availabilty", previewLength="", pageSize="9", hideFromSearchField="", searchFormLocation= "TOP" })
 	<div id="property-search-results" data-view="grid-view">
 		<div id="property-items" class="show-compare" data-view="grid-view" style="opacity: 1;">
 	<header>
@@ -45,7 +39,7 @@
 					<section class="4u 12u(narrower) feature property-item">
 						<div class="image-wrapper first">
 							<a href="#" class="image featured"><img src="@item.images" alt="">
-								@if(item.Availabilty == "6")
+								@if(item.Availabilty == "2")
 								{
 									<div class="corner_banner"><h2>sold stc</h2></div>
 								}

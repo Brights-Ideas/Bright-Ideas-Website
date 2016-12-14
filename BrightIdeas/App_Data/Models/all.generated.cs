@@ -8,8 +8,8 @@ using  Umbraco.Web;
 using  Umbraco.ModelsBuilder;
 using  Umbraco.ModelsBuilder.Umbraco;
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "8d9fa8e062aababe")]
-[assembly:System.Reflection.AssemblyVersion("0.0.0.1")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "33847e32488b458b")]
+[assembly:System.Reflection.AssemblyVersion("0.0.0.2")]
 
 
 // FILE: models.generated.cs
@@ -129,257 +129,6 @@ namespace Umbraco.Web.PublishedContentModels
 
 		/// <summary>Static getter for Hide in navigation?</summary>
 		public static bool GetUmbracoNaviHide(IUmbMaster that) { return that.GetPropertyValue<bool>("umbracoNaviHide"); }
-	}
-
-	/// <summary>Home</summary>
-	[PublishedContentModel("umbHomePage")]
-	public partial class UmbHomePage : UmbMaster
-	{
-#pragma warning disable 0109 // new is redundant
-		public new const string ModelTypeAlias = "umbHomePage";
-		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
-#pragma warning restore 0109
-
-		public UmbHomePage(IPublishedContent content)
-			: base(content)
-		{ }
-
-#pragma warning disable 0109 // new is redundant
-		public new static PublishedContentType GetModelContentType()
-		{
-			return PublishedContentType.Get(ModelItemType, ModelTypeAlias);
-		}
-#pragma warning restore 0109
-
-		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<UmbHomePage, TValue>> selector)
-		{
-			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
-		}
-
-		///<summary>
-		/// About link
-		///</summary>
-		[ImplementPropertyType("aboutLink")]
-		public object AboutLink
-		{
-			get { return this.GetPropertyValue("aboutLink"); }
-		}
-
-		///<summary>
-		/// Address
-		///</summary>
-		[ImplementPropertyType("address")]
-		public string Address
-		{
-			get { return this.GetPropertyValue<string>("address"); }
-		}
-
-		///<summary>
-		/// Banner background image
-		///</summary>
-		[ImplementPropertyType("bannerBackgroundImage")]
-		public object BannerBackgroundImage
-		{
-			get { return this.GetPropertyValue("bannerBackgroundImage"); }
-		}
-
-		///<summary>
-		/// Banner Header
-		///</summary>
-		[ImplementPropertyType("bannerHeader")]
-		public string BannerHeader
-		{
-			get { return this.GetPropertyValue<string>("bannerHeader"); }
-		}
-
-		///<summary>
-		/// Banner link text
-		///</summary>
-		[ImplementPropertyType("bannerLinkText")]
-		public string BannerLinkText
-		{
-			get { return this.GetPropertyValue<string>("bannerLinkText"); }
-		}
-
-		///<summary>
-		/// Banner Subheader
-		///</summary>
-		[ImplementPropertyType("bannerSubheader")]
-		public string BannerSubheader
-		{
-			get { return this.GetPropertyValue<string>("bannerSubheader"); }
-		}
-
-		///<summary>
-		/// Banner Text
-		///</summary>
-		[ImplementPropertyType("bannerText")]
-		public IHtmlString BannerText
-		{
-			get { return this.GetPropertyValue<IHtmlString>("bannerText"); }
-		}
-
-		///<summary>
-		/// Byline
-		///</summary>
-		[ImplementPropertyType("byline")]
-		public string Byline
-		{
-			get { return this.GetPropertyValue<string>("byline"); }
-		}
-
-		///<summary>
-		/// Contact Link
-		///</summary>
-		[ImplementPropertyType("contactLink")]
-		public object ContactLink
-		{
-			get { return this.GetPropertyValue("contactLink"); }
-		}
-
-		///<summary>
-		/// Continue Button Text
-		///</summary>
-		[ImplementPropertyType("continueButtonText")]
-		public string ContinueButtonText
-		{
-			get { return this.GetPropertyValue<string>("continueButtonText"); }
-		}
-
-		///<summary>
-		/// Copyright
-		///</summary>
-		[ImplementPropertyType("copyright")]
-		public string Copyright
-		{
-			get { return this.GetPropertyValue<string>("copyright"); }
-		}
-
-		///<summary>
-		/// Dribbble link
-		///</summary>
-		[ImplementPropertyType("dribbbleLink")]
-		public string DribbbleLink
-		{
-			get { return this.GetPropertyValue<string>("dribbbleLink"); }
-		}
-
-		///<summary>
-		/// Email Address
-		///</summary>
-		[ImplementPropertyType("emailAddress")]
-		public string EmailAddress
-		{
-			get { return this.GetPropertyValue<string>("emailAddress"); }
-		}
-
-		///<summary>
-		/// Facebook link
-		///</summary>
-		[ImplementPropertyType("facebookLink")]
-		public string FacebookLink
-		{
-			get { return this.GetPropertyValue<string>("facebookLink"); }
-		}
-
-		///<summary>
-		/// Footer List Services
-		///</summary>
-		[ImplementPropertyType("footerListServices")]
-		public object FooterListServices
-		{
-			get { return this.GetPropertyValue("footerListServices"); }
-		}
-
-		///<summary>
-		/// Footer Quick Links
-		///</summary>
-		[ImplementPropertyType("footerQuickLinks")]
-		public object FooterQuickLinks
-		{
-			get { return this.GetPropertyValue("footerQuickLinks"); }
-		}
-
-		///<summary>
-		/// Google+ link
-		///</summary>
-		[ImplementPropertyType("googleLink")]
-		public string GoogleLink
-		{
-			get { return this.GetPropertyValue<string>("googleLink"); }
-		}
-
-		///<summary>
-		/// Hide Banner?
-		///</summary>
-		[ImplementPropertyType("hideBanner")]
-		public bool HideBanner
-		{
-			get { return this.GetPropertyValue<bool>("hideBanner"); }
-		}
-
-		///<summary>
-		/// LinkedIn link
-		///</summary>
-		[ImplementPropertyType("linkedInLink")]
-		public string LinkedInLink
-		{
-			get { return this.GetPropertyValue<string>("linkedInLink"); }
-		}
-
-		///<summary>
-		/// Phone
-		///</summary>
-		[ImplementPropertyType("phone")]
-		public string Phone
-		{
-			get { return this.GetPropertyValue<string>("phone"); }
-		}
-
-		///<summary>
-		/// Pinterest
-		///</summary>
-		[ImplementPropertyType("pinterestLink")]
-		public string PinterestLink
-		{
-			get { return this.GetPropertyValue<string>("pinterestLink"); }
-		}
-
-		///<summary>
-		/// Primary Navigation
-		///</summary>
-		[ImplementPropertyType("primaryNavigation")]
-		public string PrimaryNavigation
-		{
-			get { return this.GetPropertyValue<string>("primaryNavigation"); }
-		}
-
-		///<summary>
-		/// Rss link
-		///</summary>
-		[ImplementPropertyType("rssLink")]
-		public string RssLink
-		{
-			get { return this.GetPropertyValue<string>("rssLink"); }
-		}
-
-		///<summary>
-		/// Site Name
-		///</summary>
-		[ImplementPropertyType("siteName")]
-		public string SiteName
-		{
-			get { return this.GetPropertyValue<string>("siteName"); }
-		}
-
-		///<summary>
-		/// Twitter link
-		///</summary>
-		[ImplementPropertyType("twitterLink")]
-		public string TwitterLink
-		{
-			get { return this.GetPropertyValue<string>("twitterLink"); }
-		}
 	}
 
 	/// <summary>News Item</summary>
@@ -1178,41 +927,6 @@ namespace Umbraco.Web.PublishedContentModels
 		}
 	}
 
-	/// <summary>Property Overview</summary>
-	[PublishedContentModel("umbPropertyOverview")]
-	public partial class UmbPropertyOverview : UmbMaster
-	{
-#pragma warning disable 0109 // new is redundant
-		public new const string ModelTypeAlias = "umbPropertyOverview";
-		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
-#pragma warning restore 0109
-
-		public UmbPropertyOverview(IPublishedContent content)
-			: base(content)
-		{ }
-
-#pragma warning disable 0109 // new is redundant
-		public new static PublishedContentType GetModelContentType()
-		{
-			return PublishedContentType.Get(ModelItemType, ModelTypeAlias);
-		}
-#pragma warning restore 0109
-
-		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<UmbPropertyOverview, TValue>> selector)
-		{
-			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
-		}
-
-		///<summary>
-		/// Map Section
-		///</summary>
-		[ImplementPropertyType("mapSection")]
-		public object MapSection
-		{
-			get { return this.GetPropertyValue("mapSection"); }
-		}
-	}
-
 	/// <summary>Property Details</summary>
 	[PublishedContentModel("umbPropertyDetails")]
 	public partial class UmbPropertyDetails : UmbMaster
@@ -1284,12 +998,12 @@ namespace Umbraco.Web.PublishedContentModels
 		}
 
 		///<summary>
-		/// Availabilty: The availability of the property for example To Let and Let. Which corresponds to the lookups below: 1 = On Hold 2 = To Let 3 = References Pending 4 = Let Agreed 5 = Let 6 = Withdrawn
+		/// Availability: The availability of the property for example To Let and Let. Which corresponds to the lookups below: 1 = On Hold 2 = To Let 3 = References Pending 4 = Let Agreed 5 = Let 6 = Withdrawn
 		///</summary>
-		[ImplementPropertyType("availabilty")]
-		public string Availabilty
+		[ImplementPropertyType("availability")]
+		public string Availability
 		{
-			get { return this.GetPropertyValue<string>("availabilty"); }
+			get { return this.GetPropertyValue<string>("availability"); }
 		}
 
 		///<summary>
@@ -1412,10 +1126,10 @@ namespace Umbraco.Web.PublishedContentModels
 		///<summary>
 		/// Property Reception Rooms
 		///</summary>
-		[ImplementPropertyType("propertyReceptionRomms")]
-		public string PropertyReceptionRomms
+		[ImplementPropertyType("propertyReceptionRooms")]
+		public string PropertyReceptionRooms
 		{
-			get { return this.GetPropertyValue<string>("propertyReceptionRomms"); }
+			get { return this.GetPropertyValue<string>("propertyReceptionRooms"); }
 		}
 
 		///<summary>
@@ -1434,6 +1148,15 @@ namespace Umbraco.Web.PublishedContentModels
 		public string PropertyType
 		{
 			get { return this.GetPropertyValue<string>("propertyType"); }
+		}
+
+		///<summary>
+		/// Region ID
+		///</summary>
+		[ImplementPropertyType("regionID")]
+		public string RegionID
+		{
+			get { return this.GetPropertyValue<string>("regionID"); }
 		}
 
 		///<summary>
@@ -1478,6 +1201,67 @@ namespace Umbraco.Web.PublishedContentModels
 		public bool UmbracoNaviHide
 		{
 			get { return this.GetPropertyValue<bool>("umbracoNaviHide"); }
+		}
+	}
+
+	/// <summary>Property Overview</summary>
+	[PublishedContentModel("umbPropertyOverview")]
+	public partial class UmbPropertyOverview : UmbMaster
+	{
+#pragma warning disable 0109 // new is redundant
+		public new const string ModelTypeAlias = "umbPropertyOverview";
+		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
+#pragma warning restore 0109
+
+		public UmbPropertyOverview(IPublishedContent content)
+			: base(content)
+		{ }
+
+#pragma warning disable 0109 // new is redundant
+		public new static PublishedContentType GetModelContentType()
+		{
+			return PublishedContentType.Get(ModelItemType, ModelTypeAlias);
+		}
+#pragma warning restore 0109
+
+		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<UmbPropertyOverview, TValue>> selector)
+		{
+			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
+		}
+
+		///<summary>
+		/// Proprty Type
+		///</summary>
+		[ImplementPropertyType("proprtyType")]
+		public object ProprtyType
+		{
+			get { return this.GetPropertyValue("proprtyType"); }
+		}
+	}
+
+	/// <summary>Home</summary>
+	[PublishedContentModel("umbHomePage")]
+	public partial class UmbHomePage : UmbMaster
+	{
+#pragma warning disable 0109 // new is redundant
+		public new const string ModelTypeAlias = "umbHomePage";
+		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
+#pragma warning restore 0109
+
+		public UmbHomePage(IPublishedContent content)
+			: base(content)
+		{ }
+
+#pragma warning disable 0109 // new is redundant
+		public new static PublishedContentType GetModelContentType()
+		{
+			return PublishedContentType.Get(ModelItemType, ModelTypeAlias);
+		}
+#pragma warning restore 0109
+
+		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<UmbHomePage, TValue>> selector)
+		{
+			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
 		}
 	}
 

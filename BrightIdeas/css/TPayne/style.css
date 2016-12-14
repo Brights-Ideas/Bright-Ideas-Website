@@ -404,7 +404,6 @@ input.dsidx-contact-form-submit a,
 }
 .btn-primary,
 .btn-primary:focus,
-input[type="submit"],
 input.dsidx-contact-form-submit,
 .more-link,
 .acf-button.blue {
@@ -458,7 +457,6 @@ select:not(.attachment-filters) {
   -webkit-appearance: none;
   -webkit-box-shadow: none;
   box-shadow: none;
-  background: transparent;
   -webkit-transition: all 0.2s;
   -moz-transition: all 0.2s;
   -ms-transition: all 0.2s;
@@ -475,9 +473,7 @@ input[type=radio] {
   margin-right: 0.5em;
   -webkit-appearance: radio;
 }
-input[type=submit] {
-  border-color: transparent !important;
-}
+
 input[type=file] {
   height: auto;
   margin-right: 5px;

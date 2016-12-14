@@ -6,12 +6,23 @@
 @using Umbraco.Web.Models
 @inherits Umbraco.Web.Macros.PartialViewMacroPage
 @{
+    var statusTypes = new List<SelectListItem>
+        {
+            new SelectListItem {Selected = false, Text = "Any Status", Value = "0"},
+            new SelectListItem {Selected = false, Text = "For Sale", Value = "1"},
+            new SelectListItem {Selected = false, Text = "Sold STC", Value = "2"},
+            new SelectListItem {Selected = false, Text = "To Let", Value = "3"},
+        };
+
     int parsedInt;
 
     // Parse querystring / macro parameter
     var model = new SearchViewModel
     {
+        SearchPropertyStatuses = statusTypes,
+        //SearchPropertyStatus = CleanseSearchTerm(("" + Request["s"]).ToLower(CultureInfo.InstalledUICulture)),
         SearchTerm = CleanseSearchTerm(("" + Request["q"]).ToLower(CultureInfo.InvariantCulture)),
+
         CurrentPage = int.TryParse(Request["p"], out parsedInt) ? parsedInt : 1,
 
         PageSize = GetMacroParam(Model, "pageSize", s => int.Parse(s), 10),
@@ -55,19 +66,19 @@
     {
         model.SearchFields.Add("umbracoFileName");
     }
-    
+
     // Check the search term isn't empty
     if(!string.IsNullOrWhiteSpace(model.SearchTerm))
     {
         // Tokenize the search term
         model.SearchTerms = Tokenize(model.SearchTerm);
-        
+
         // Perform the search
         var searcher = ExamineManager.Instance.SearchProviderCollection["ExternalSearcher"];
         var criteria = searcher.CreateSearchCriteria();
         var query = new StringBuilder();
         query.AppendFormat("-{0}:1 ", model.HideFromSearchField);
-        
+
         // Set search path
         var contentPathFilter = model.RootContentNodeId > 0
             ? string.Format("__IndexType:{0} +searchPath:{1} -template:0", UmbracoExamine.IndexTypes.Content, model.RootContentNodeId)
@@ -89,7 +100,7 @@
                 query.AppendFormat("+(({0}) ({1})) ", contentPathFilter, mediaPathFilter);
                 break;
         }
-        
+
         // Ensure page contains all search terms in some way
         foreach (var term in model.SearchTerms)
         {
@@ -111,7 +122,7 @@
         }
 
         var criteria2 = criteria.RawQuery(query.ToString());
-        
+
         var results = searcher.Search(criteria2)
            .Where(x => (
                 !Umbraco.IsProtected(int.Parse(x.Fields["id"]), x.Fields["path"]) ||
@@ -129,12 +140,12 @@
         model.TotalResults = results.Count;
         model.TotalPages = (int)Math.Ceiling((decimal)model.TotalResults / model.PageSize);
         model.CurrentPage = Math.Max(1, Math.Min(model.TotalPages, model.CurrentPage));
-        
+
         // Page the results
         model.PagedResults = model.AllResults.Skip(model.PageSize * (model.CurrentPage - 1)).Take(model.PageSize);
 
         LogHelper.Debug<string>("[ezSearch] Searching Lucene with the following query: " + query.ToString());
-        
+
         if (!model.PagedResults.Any())
         {
             // No results found, so render no results view
@@ -183,9 +194,182 @@
 @helper RenderForm(SearchViewModel model)
 {
     <form action="" method="GET" class="ezsearch-form">
-        <input type="text" name="q" placeholder="@(GetDictionaryValue("[ezSearch] Search", "Search"))" value="@(model.SearchTerm)" />
-        <input type="submit" value="@(GetDictionaryValue("[ezSearch] Search", "Search"))" />
-    </form>
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
+                <select name="Location" id="Location" class="form-control">
+                    <option value="all">Any Location</option>
+                    <option value="benwick">
+                        Benwick
+                    </option>
+                    <option value="cambridge">
+                        Cambridge
+                    </option>
+                    <option value="chatteris" selected="selected">
+                        Chatteris
+                    </option>
+                    <option value="doddington">
+                        Doddington
+                    </option>
+                    <option value="ely">
+                        Ely
+                    </option>
+                    <option value="gorefield">
+                        Gorefield
+                    </option>
+                    <option value="guyhirn">
+                        Guyhirn
+                    </option>
+                    <option value="manea">
+                        Manea
+                    </option>
+                    <option value="march">
+                        March
+                    </option>
+                    <option value="mepal">
+                        Mepal
+                    </option>
+                    <option value="murrow">
+                        Murrow
+                    </option>
+                    <option value="old-hurst">
+                        Old Hurst
+                    </option>
+                    <option value="outwell">
+                        Outwell
+                    </option>
+                    <option value="ramsey">
+                        Ramsey
+                    </option>
+                    <option value="somersham">
+                        Somersham
+                    </option>
+                    <option value="sutton">
+                        Sutton
+                    </option>
+                    <option value="turves">
+                        Turves
+                    </option>
+                    <option value="tydd-st-mary">
+                        Tydd St. Mary
+                    </option>
+                    <option value="upwell">
+                        Upwell
+                    </option>
+                    <option value="walsoken">
+                        Walsoken
+                    </option>
+                    <option value="warboys">
+                        Warboys
+                    </option>
+                    <option value="whittlesey">
+                        Whittlesey
+                    </option>
+                    <option value="wimblington">
+                        Wimblington
+                    </option>
+                    <option value="wisbech">
+                        Wisbech
+                    </option>
+                    <option value="witcham">
+                        Witcham
+                    </option>
+                </select>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
+                <select name="" id="" class="form-control">
+                    <option value="all">Any Type</option>
+                    <option value="bungalow">
+                        Bungalow
+                    </option>
+                    <option value="cottage">
+                        Cottage
+                    </option>
+                    <option value="detached-barn-conversion">
+                        Detached Barn Conversion
+                    </option>
+                    <option value="detached-bungalow">
+                        Detached bungalow
+                    </option>
+                    <option value="detached-chalet-bungalow">
+                        Detached Chalet Bungalow
+                    </option>
+                    <option value="detached-house">
+                        Detached House
+                    </option>
+                    <option value="en-suite">
+                        En-suite
+                    </option>
+                    <option value="end-terrace">
+                        End Terrace
+                    </option>
+                    <option value="flats-apartments">
+                        Flats / Apartments
+                    </option>
+                    <option value="house">
+                        Houses
+                    </option>
+                    <option value="land">
+                        Land
+                    </option>
+                    <option value="mid-terrace">
+                        Mid terrace
+                    </option>
+                    <option value="q-type">
+                        Q type
+                    </option>
+                    <option value="semi-detached">
+                        Semi detached
+                    </option>
+                    <option value="semi-detached-barn-conversion">
+                        Semi Detached Barn Conversion
+                    </option>
+                    <option value="semi-detached-bungalow">
+                        Semi Detached Bungalow
+                    </option>
+                    <option value="shop">
+                        Shop
+                    </option>
+                </select>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3 form-group">
+                <input type="number" name="" id="" value="" placeholder="Starting Price" min="0" class="form-control">
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3 form-group">
+                <input type="number" name="" id="" value="" placeholder="Max Price" min="0" class="form-control">
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
+                <select name="q" id="" class="form-control">
+                    <option value="all">Any Status</option>
+                    <option value="for-sale">
+                        For Sale
+                    </option>
+                    <option value="sold">
+                        Sold!
+                    </option>
+                    <option value="to-let">
+                        To Let
+                    </option>
+                </select>
+                
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3 form-group">
+                <input type="submit" value="@(GetDictionaryValue("[ezSearch] Search", "Search"))" class="btn btn-primary form-control" />
+            </div>
+
+        </div>
+        <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
+            @*<select name="q" id="" class="form-control">
+            @foreach (var status in model.SearchPropertyStatuses)
+            {
+                <option selected="@(status.Value == model.SearchPropertyStatus ? "selected" : " ")" value="@status.Value">@status.Text</option>
+            }    
+            </select>*@
+
+        </div>
+            @*<input type="text" name="q" placeholder="@(GetDictionaryValue("[ezSearch] Search", "Search"))" value="@(model.SearchTerm)" />*@
+            
+</form>
 }
 
 @helper RenderSummary(SearchViewModel model)
@@ -235,11 +419,14 @@
                 <div class="image-wrapper first">
                     <a href="#" class="image featured">
                         <img src="@result.GetPropertyValue("images")" alt="">
-                        <div class="corner_banner"><h2>sold stc</h2></div>
+                        @if (result.GetPropertyValue<string>("availabilty") == "2")
+                        {
+                            <div class="corner_banner"><h2>sold stc</h2></div>
+                        }
                     </a>
                 </div>
                 <header>
-                    <h3>@result.Name @result.GetPropertyValue("displayAddress")</h3>
+                    <h3>@result.Name</h3>
                 </header>
                 <p>We are delighted to offer for sale this immaculately presented and imaginatively extended attractive…</p>
                 <div class="property-content">
@@ -337,7 +524,7 @@
     // ==================================================
     //  Helper Functions
     //==================================================
-    
+
     // Cleanse the search term
     public string CleanseSearchTerm(string input)
     {
@@ -358,26 +545,26 @@
     {
         return Highlight(input.ToString(), searchTerms);
     }
-    
+
     // Highlights all occurances of the search terms in a body of text
     public IHtmlString Highlight(string input, IEnumerable<string> searchTerms)
     {
         input = HttpUtility.HtmlDecode(input);
-        
+
         foreach (var searchTerm in searchTerms)
         {
             input = Regex.Replace(input, Regex.Escape(searchTerm), @"<strong>$0</strong>", RegexOptions.IgnoreCase);
         }
-        
+
         return new HtmlString(input);
     }
-    
+
     // Formats a string and returns as HTML
     public IHtmlString FormatHtml(string input, params object[] args)
     {
         return Html.Raw(string.Format(input, args));
     }
-    
+
     // Gets a dictionary value with a fallback
     public string GetDictionaryValue(string key, string fallback)
     {
@@ -439,7 +626,7 @@
             return fallback;
         }
     }
-    
+
     // Splits a coma seperated string into a list
     public IList<string> SplitToList(string input)
     {
@@ -447,15 +634,17 @@
             .Select(f => f.Trim())
             .Where(f => !string.IsNullOrEmpty(f))
             .ToList();
-    } 
+    }
 
     // ==================================================
     //  Helper Classes
     //==================================================
-    
+
     public class SearchViewModel
     {
         // Query Parameters
+        public string SearchPropertyStatus { get; set; }
+        public List<SelectListItem> SearchPropertyStatuses { get; set; }
         public string SearchTerm { get; set; }
         public IEnumerable<string> SearchTerms { get; set; }
         public int CurrentPage { get; set; }

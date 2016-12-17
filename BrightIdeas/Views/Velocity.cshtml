@@ -29,11 +29,15 @@
 	<link rel="apple-touch-icon" sizes="72x72" href="~/images/logo_favicon.png">
 	<link rel="apple-touch-icon" sizes="114x114" href="~/images/logo_favicon.png">
 	
-	<link rel="stylesheet" id="bootstrap-css" href="//netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" type="text/css" media="all">
+	@*<link rel="stylesheet" id="bootstrap-css" href="//netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" type="text/css" media="all">*@
 	@*<link rel="stylesheet" id="bootstrap-css" type="text/css" href="/css/usebootstrap.css" />
 	<link rel="stylesheet" type="text/css" href="/css/main.css" />*@
+	
+	<link rel="stylesheet" id="bootstrap-css" href="/css/bootstrap.min.css" type="text/css">
 	<link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link href="/css/bootstrap-select.min.css" rel="stylesheet">
     <link rel="stylesheet" id="style-css" href="/css/TPayne/style.css" type="text/css" media="all">
+	
 		
     <!--[if lte IE 9]><link rel="stylesheet" href="/css/ie9.css" /><![endif]-->
     <!--[if lte IE 8]><script src="/scripts/html5shiv.js"></script><link rel="stylesheet" href="/css/ie8.css" /><![endif]-->
@@ -117,14 +121,12 @@
 					<div class="nav navbar-nav">
 						<ul id="menu-nav" class="clearfix">
 							<li id="menu-item-489" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-485 current_page_item menu-item-489">
-								<a href="http://www.tpayneandco.co.uk/">Home</a>
+								<a href="#">Home</a>
 							</li>
 							<li id="menu-item-299" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-299">
-								<a href="http://www.tpayneandco.co.uk/search/">View Properties</a>
+								<a href="#">View Properties</a>
 							</li>
-							<li id="menu-item-494" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-494">
-								<a href="http://www.tpayneandco.co.uk/contact-estate-agency-in-chatteris/">Contact Us</a>
-							</li>
+							
 						</ul>
 					</div>				
 					<div id="toggle-navbar"><i class="icon-angle-right"></i></div>
@@ -134,14 +136,12 @@
 	  </div> 
 </header>
 		<!-- Map -->			
-		<div id="map-wrapper">
+		@*<div id="map-wrapper">
 			<div id="map"></div>	
-		</div>
+		</div>*@
 		<!-- Main -->
-		<div class="container">
-			<div class="row">
-				@RenderBody()
-			</div>
+		<div class="main">
+			@RenderBody()
 		</div>
 				
 		<!-- Footer -->
@@ -174,7 +174,9 @@
 	<script src="/scripts/util.js"></script>
 	<!--[if lte IE 8]><script src="/scripts/ie/respond.min.js"></script><![endif]-->
 	<script src="/scripts/main.js"></script>
-	
+	<script src="/scripts/bootstrap.min.js"></script>
+	<script src="/scripts/bootstrap-select.js"></script>
+							
 	<!-- Custom theme -->
 	<script src="https://cdn.rawgit.com/googlemaps/v3-utility-library/master/infobox/src/infobox.js"></script>
 	<script type="text/javascript" src="/scripts/default.js"></script>

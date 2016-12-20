@@ -20,13 +20,12 @@
     var model = new SearchViewModel
     {
         // SearchPropertyStatuses = statusTypes,
-        //SearchPropertyStatus = CleanseSearchTerm(("" + Request["Location"]).ToLower(CultureInfo.InstalledUICulture)), Request["Location"].ToLower(CultureInfo.InvariantCulture) + "&" + Request["minPrice"].ToLower(),
         //SearchTerms = Model, "", s => SplitToList(s), new List<string> { "Location", "minPrice", "maxPrice", "type" },
-        //localhost:53086/properties/?Location=chatteris&minPrice=any&maxPrice=any&type=all&q=all
+
+        //SearchTerm = CleanseSearchTerm(("" + Request["q"]).ToLower(CultureInfo.InvariantCulture)),
         SearchTerms = new Dictionary<string, string>(),
-        Location = "" + Request["Location"].ToLower(CultureInfo.InvariantCulture),
-        SearchTerm = "" + Request["minPrice"],
-        //+" " + Request["maxPrice"] 
+        Location = "" + Request["Location"],//.ToLower(CultureInfo.InvariantCulture),
+        SearchTerm = "(Location=" + Request["Location"] + ")" + "(MinPrice=" + Request["MinPrice"] + ")" + "(MaxPrice=" + Request["MaxPrice"] + ")",
         //+ " " + Request["type"] + " " 
         //+ Request["status"],
 
@@ -75,24 +74,30 @@
     }
 
     // Check the search term isn't empty
-    if (!string.IsNullOrWhiteSpace(model.SearchTerm))
-    {
-        // Tokenize the search term
-        model.SearchTerms.Add("Location", model.Location);
+    //var listStrLineElements = model.SearchTerm.Split('&').ToList();
+    //string sx = "(colorIndex=3)(font.family=Helvicta)(font.bold=1)";
 
-        model.SearchTerms.Add("minPrice", model.SearchTerm);
-        //testDict.Add("City", "NY");
-        //= Tokenize(model.SearchTerm);
-        //IEnumerable<string> e = source.Select(c = > c.ToString());
-        //return Regex.Matches(input, @"[\""].+?[\""]|[^ ]+")
-        //   .Cast<Match>()
-        //   .Select(m => m.Value.Trim('\"'))
-        //   .ToList();
-        //model.SearchTerms.ToList().Add(Tokenize(model.SearchPropertyStatus).ToString());
+    var items = model.SearchTerm.Split(new[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries)
+        .Select(s => s.Split(new[] { '=' }));
+
+    //if (!string.IsNullOrWhiteSpace(model.SearchTerm))
+    if(items.Any())
+    {
+        foreach (var item in items)
+        {
+            model.SearchTerms.Add(item[0], item[1]);
+        }
+        // Tokenize the search term
+        //model.SearchTerms = Tokenize(model.SearchTerm);
+        //model.SearchTerms.Add("Location", model.Location);
+
 
         // Perform the search
         var searcher = ExamineManager.Instance.SearchProviderCollection["ExternalSearcher"];
+        //var sc = ExamineManager.Instance.CreateSearchCriteria();
         var criteria = searcher.CreateSearchCriteria();
+
+        //var query = sc.NodeTypeAlias("PropertyDetail");
         var query = new StringBuilder();
         query.AppendFormat("-{0}:1 ", model.HideFromSearchField);
 
@@ -118,9 +123,28 @@
                 break;
         }
 
+        //if (model.SearchTermsPriceLower != String.Empty && PriceHigher != String.Empty)
+        //{
+        //    var paddedLower = int.Parse(PriceLower).ToString("D6");
+        //    var paddedHigher = int.Parse(PriceHigher).ToString("D6");
+
+        //    query = query.And().Range("price", paddedLower, paddedHigher, true, true);
+        //}
+
         // Ensure page contains all search terms in some way
         foreach (var term in model.SearchTerms)
         {
+            //if(term.Key == "MinPrice" && term.Value >= 0 &&
+            //    term.Key == "MinPrice" && term.Value <= 100)
+            //    //if(term.Key == "") int x = 30;
+            //    //if (Enumerable.Range(1, 100).Contains(x))
+            //    //true
+            //    if (collection.Get("MinPrice") == null)
+            //    {
+            //        return collection.AllKeys.Contains(key);
+            //    }
+            //if (x >= 1 && x <= 100)
+
             var groupedOr = new StringBuilder();
             foreach (var searchField in model.SearchFields)
             {
@@ -135,6 +159,7 @@
             foreach (var term in model.SearchTerms)
             {
                 query.AppendFormat("{0}:{1}*^{2} ", model.SearchFields[i], term.Value, model.SearchFields.Count - i);
+                //query = query.And().Range("price", paddedLower, paddedHigher, true, true);
             }
         }
 
@@ -149,6 +174,8 @@
                 )) && (
                     (x.Fields["__IndexType"] == UmbracoExamine.IndexTypes.Content && Umbraco.TypedContent(int.Parse(x.Fields["id"])) != null) ||
                     (x.Fields["__IndexType"] == UmbracoExamine.IndexTypes.Media && Umbraco.TypedMedia(int.Parse(x.Fields["id"])) != null)
+
+                //{ SearchIndexType: , LuceneQuery: +__NodeTypeAlias:propertydetail +paddedprice:[0 TO 300000] }
                 ))
             .ToList();
 
@@ -233,8 +260,8 @@
             </select>
         </div>
         <div class="col-xs-12 col-sm-4 col-md-3 form-group dropdown-double">
-            <select name="minPrice" class="selectpicker">
-                <option value="any">Min Price</option>
+            <select name="MinPrice" class="selectpicker">
+                <option value="0">Min Price</option>
                 <option value="50000">£50,000</option>
                 <option value="60000">£60,000</option>
                 <option value="70000">£70,000</option>
@@ -293,8 +320,8 @@
                 <option value="">Min Price</option>
             </select>
             <div class="search-form divider">to</div>
-            <select name="maxPrice" class="selectpicker">
-                <option value="any">Max Price</option>
+            <select name="MaxPrice" class="selectpicker">
+                <option value="0">Max Price</option>
                 <option value="50000">£50,000</option>
                 <option value="60000">£60,000</option>
                 <option value="70000">£70,000</option>
@@ -353,9 +380,8 @@
                 <option value="">Max Price</option>
             </select>
         </div>
-        @*<div class="row">*@
         <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
-            <select name="type" id="" class="form-control">
+            <select name="Type" id="PropertyType" class="form-control">
                 <option value="all">Any Type</option>
                 <option value="bungalow">
                     Bungalow
@@ -412,7 +438,7 @@
         </div>
 
         <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
-            <select name="q" id="" class="selectpicker form-control">
+            <select name="Status" id="PropertyStatus" class="selectpicker form-control">
                 <option value="all">Any Status</option>
                 <option value="for-sale">
                     For Sale
@@ -426,7 +452,7 @@
             </select>
 
         </div>
-
+        @*<div class="row">*@
         <div class="col-xs-12 col-sm-4 col-md-3 form-group">
             <input type="submit" value="@(GetDictionaryValue("[ezSearch] Search", "Search"))" class="btn btn-primary form-control" />
         </div>
@@ -730,8 +756,6 @@ var endRecord = Math.Min(model.TotalResults, (startRecord - 1) + model.PageSize)
         //public string SearchPropertyStatus { get; set; }
         //public List<SelectListItem> SearchPropertyStatuses { get; set; }
         public string Location { get; set; }
-        public decimal MinPrice { get; set; }
-        public decimal MaxPrice { get; set; }
 
         public string SearchTerm { get; set; }
         public Dictionary<string, string> SearchTerms { get; set;}

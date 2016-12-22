@@ -20,13 +20,13 @@
     var model = new SearchViewModel
     {
         // SearchPropertyStatuses = statusTypes,
-        //SearchTerms = Model, "", s => SplitToList(s), new List<string> { "Location", "minPrice", "maxPrice", "type" },
 
         //SearchTerm = CleanseSearchTerm(("" + Request["q"]).ToLower(CultureInfo.InvariantCulture)),
         SearchTerms = new Dictionary<string, string>(),
-        Location = "" + Request["Location"],//.ToLower(CultureInfo.InvariantCulture),
-        MinPrice = "" + Request["MinPrice"],
-        MaxPrice = "" + Request["MaxPrice"],
+        Location = Request["Location"],//.ToLower(CultureInfo.InvariantCulture),
+
+        MinPrice = Convert.ToInt32(Request["MinPrice"]) ,
+        MaxPrice = Convert.ToInt32(Request["MaxPrice"]),
         SearchTerm = "(Location=" + Request["Location"] + ")" + "(MinPrice=" + Request["MinPrice"] + ")" + "(MaxPrice=" + Request["MaxPrice"] + ")",
         //+ " " + Request["type"] + " " 
         //+ Request["status"],
@@ -76,9 +76,6 @@
     }
 
     // Check the search term isn't empty
-    //var listStrLineElements = model.SearchTerm.Split('&').ToList();
-    //string sx = "(colorIndex=3)(font.family=Helvicta)(font.bold=1)";
-
     var items = model.SearchTerm.Split(new[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries)
         .Select(s => s.Split(new[] { '=' }));
 
@@ -96,10 +93,10 @@
 
         // Perform the search
         var searcher = ExamineManager.Instance.SearchProviderCollection["ExternalSearcher"];
-        //var sc = ExamineManager.Instance.CreateSearchCriteria();
+        //var searcher = ExamineManager.Instance.CreateSearchCriteria();
         var criteria = searcher.CreateSearchCriteria();
 
-        var query = criteria.NodeTypeAlias("PropertyDetail");
+        var query = criteria.NodeTypeAlias("umbPropertyDetails");
         //var query = new StringBuilder();
         //query.AppendFormat("-{0}:1 ", model.HideFromSearchField);
 
@@ -136,29 +133,28 @@
         // Ensure page contains all search terms in some way
         //foreach (var term in model.SearchTerms)
         //{
-        //if(term.Key == "MinPrice" && term.Value >= 0 &&
-        //    term.Key == "MinPrice" && term.Value <= 100)
-        //    //if(term.Key == "") int x = 30;
-        //    //if (Enumerable.Range(1, 100).Contains(x))
-        //    //true
-        //    if (collection.Get("MinPrice") == null)
-        //    {
-        //        return collection.AllKeys.Contains(key);
-        //    }
 
         //var groupedOr = new StringBuilder();
         //foreach (var searchField in model.SearchFields)
         //{
         //    groupedOr.AppendFormat("{0}:{1}* ", searchField, term.Value);
         //}
-        query.And().Field("regionId", model.Location); //.Append("+(" + groupedOr.ToString() + ") ");
+        query.And().Field("regionID", model.Location.ToString()); //.Append("+(" + groupedOr.ToString() + ") ");
 
-        if (model.MinPrice != String.Empty && model.MaxPrice != String.Empty)
+        if (model.MinPrice >= 0 && model.MaxPrice >= 0)
         {
-            query = query.And().Range("price", model.MinPrice, model.MaxPrice, true, true);
+
+            //if (PriceLower != String.Empty && PriceHigher != String.Empty)
+            //{
+                var paddedLower = model.MinPrice.ToString("D6");
+                var paddedHigher = model.MaxPrice.ToString("D6");
+
+                query = query.And().Range("price", paddedLower, paddedHigher, true, true);
+            //}
+            //query = query.And().Range("price", model.MinPrice, model.MaxPrice, true, true);
         }
 
-        query.Not().Field("umbracoNaviHide", "1");
+        //query.Not().Field("umbracoNaviHide", "1");
         //}
 
         // Rank content based on positon of search terms in fields
@@ -171,25 +167,23 @@
         //    }
         //}
 
-        var criteria2 = criteria.RawQuery(query.ToString());
-
-        var results = ExamineManager.Instance.Search(query.Compile()); //searcher.Search(criteria2)
-                                                                       //.Where(x => (
-                                                                       //     !Umbraco.IsProtected(int.Parse(x.Fields["id"]), x.Fields["path"]) ||
-                                                                       //     (
-                                                                       //         Umbraco.IsProtected(int.Parse(x.Fields["id"]), x.Fields["path"]) &&
-                                                                       //         Umbraco.MemberHasAccess(int.Parse(x.Fields["id"]), x.Fields["path"])
-                                                                       //     )) && (
-                                                                       //         (x.Fields["__IndexType"] == UmbracoExamine.IndexTypes.Content && Umbraco.TypedContent(int.Parse(x.Fields["id"])) != null) ||
-                                                                       //         (x.Fields["__IndexType"] == UmbracoExamine.IndexTypes.Media && Umbraco.TypedMedia(int.Parse(x.Fields["id"])) != null)
-
-        //     //{ SearchIndexType: , LuceneQuery: +__NodeTypeAlias:propertydetail +paddedprice:[0 TO 300000] }
-        //     ))
-        // .ToList();
+        //var criteria2 = criteria.RawQuery(query.ToString());
+        //ExamineManager.Instance.Search(query.Compile());
+        var results = searcher.Search(query.Compile())//criteria2)
+                            .Where(x => (
+                                !Umbraco.IsProtected(int.Parse(x.Fields["id"]), x.Fields["path"]) ||
+                                (
+                                    Umbraco.IsProtected(int.Parse(x.Fields["id"]), x.Fields["path"]) &&
+                                    Umbraco.MemberHasAccess(int.Parse(x.Fields["id"]), x.Fields["path"])
+                                )) && (
+                                    (x.Fields["__IndexType"] == UmbracoExamine.IndexTypes.Content && Umbraco.TypedContent(int.Parse(x.Fields["id"])) != null) ||
+                                    (x.Fields["__IndexType"] == UmbracoExamine.IndexTypes.Media && Umbraco.TypedMedia(int.Parse(x.Fields["id"])) != null)
+             //{ SearchIndexType: , LuceneQuery: +__NodeTypeAlias:propertydetail +paddedprice:[0 TO 300000] }
+             )).ToList();
 
         model.AllResults = results;
 
-        model.TotalResults = results.TotalItemCount;//.Count;
+        model.TotalResults = results.Count;
         model.TotalPages = (int)Math.Ceiling((decimal)model.TotalResults / model.PageSize);
         model.CurrentPage = Math.Max(1, Math.Min(model.TotalPages, model.CurrentPage));
 
@@ -249,20 +243,20 @@
 
         <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
             <select name="Location" class="selectpicker">
-                <option value="all">Any Location</option>
-                <option value="benwick">
+                <option value="0">Any Location</option>
+                <option value="1">
                     Benwick
                 </option>
-                <option value="cambridge">
+                <option value="2">
                     Cambridge
                 </option>
-                <option value="chatteris" selected="selected">
+                <option value="3" selected="selected">
                     Chatteris
                 </option>
-                <option value="doddington">
+                <option value="4">
                     Doddington
                 </option>
-                <option value="ely">
+                <option value="4">
                     Ely
                 </option>
             </select>
@@ -764,8 +758,8 @@ var endRecord = Math.Min(model.TotalResults, (startRecord - 1) + model.PageSize)
         //public string SearchPropertyStatus { get; set; }
         //public List<SelectListItem> SearchPropertyStatuses { get; set; }
         public string Location { get; set; }
-        public string MinPrice { get; set; }
-        public string MaxPrice { get; set; }
+        public int MinPrice { get; set; }
+        public int MaxPrice { get; set; }
 
         public string SearchTerm { get; set; }
         public Dictionary<string, string> SearchTerms { get; set;}

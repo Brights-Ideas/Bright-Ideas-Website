@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using Examine;
 using Umbraco.Core;
+using UmbracoExamine;
 
 namespace Our.Umbraco.ezSearch
 {
@@ -29,13 +30,25 @@ namespace Our.Umbraco.ezSearch
 
         #endregion
 
+        //public ezSearchBoostrapper()
+        //{
+            //Add event handler for 'GatheringNodeData' 
+            //ExamineManager.Instance.IndexProviderCollection["ExternalIndexer"].GatheringNodeData += new EventHandler<IndexingNodeDataEventArgs>(OnGatheringNodeData);
+
+            //ExamineManager.Instance.IndexProviderCollection["ExternalIndexer"].GatheringNodeData += OnGatheringNodeData;
+            
+        //}
+
         private void OnGatheringNodeData(object sender, IndexingNodeDataEventArgs e)
         {
+            //umbraco.NodeFactory.Node theNode = new umbraco.NodeFactory.Node(e.NodeId);
             // Create searchable path
             if (e.Fields.ContainsKey("path"))
             {
                 e.Fields["searchPath"] = e.Fields["path"].Replace(',', ' ');
             }
+
+            //e.Fields.Add("price", GetFieldValue(e, propertyValue, "price"));
 
             // Lowercase all the fields for case insensitive searching
             var keys = e.Fields.Keys.ToList();

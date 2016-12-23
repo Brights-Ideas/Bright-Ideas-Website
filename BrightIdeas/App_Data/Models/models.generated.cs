@@ -19,8 +19,8 @@ using Umbraco.ModelsBuilder;
 using Umbraco.ModelsBuilder.Umbraco;
 
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "33847e32488b458b")]
-[assembly:System.Reflection.AssemblyVersion("0.0.0.2")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "3697aeb21a68109")]
+[assembly:System.Reflection.AssemblyVersion("0.0.0.1")]
 
 namespace Umbraco.Web.PublishedContentModels
 {
@@ -1048,9 +1048,9 @@ namespace Umbraco.Web.PublishedContentModels
 		/// Price
 		///</summary>
 		[ImplementPropertyType("price")]
-		public string Price
+		public int Price
 		{
-			get { return this.GetPropertyValue<string>("price"); }
+			get { return this.GetPropertyValue<int>("price"); }
 		}
 
 		///<summary>

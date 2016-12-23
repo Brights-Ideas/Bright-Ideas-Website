@@ -243,3 +243,4 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+BrightIdeas/App_Data/Logs/UmbracoTraceLog.freelance-pc.txt

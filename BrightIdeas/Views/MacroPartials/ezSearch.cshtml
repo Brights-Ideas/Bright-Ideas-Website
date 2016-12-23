@@ -127,12 +127,12 @@
         //groupedOr.AppendFormat("{0}:{1}* ", searchField, term.Value);
         query.And().Field("regionID", model.Location);
         //}
-        if(model.MinPrice > 0 && model.MaxPrice > 0)//else
+        if(model.MinPrice >= 0 && model.MaxPrice > 0)//else
         {
             var paddedLower = model.MinPrice.ToString("D6");
             var paddedHigher = model.MaxPrice.ToString("D6");
             //groupedOr.AppendFormat(String.Format(searchField + ":[{0} TO {1}]", model.MinPrice, model.MaxPrice));
-            query.And().Range("price", 0, 795000, true, true);
+            query.And().Range("price", paddedLower, paddedHigher, true, true);
         }
         //}
         //query.Append("+(" + groupedOr.ToString() + ") ");

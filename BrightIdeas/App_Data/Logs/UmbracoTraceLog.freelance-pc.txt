@@ -71,3 +71,25 @@ _shutDownStack=   at System.Environment.GetStackTrace(Exception e, Boolean needF
    at System.Threading.QueueUserWorkItemCallback.System.Threading.IThreadPoolWorkItem.ExecuteWorkItem()
    at System.Threading.ThreadPoolWorkQueue.Dispatch()
    at System.Threading._ThreadPoolWaitCallback.PerformWaitCallback()
+ 2016-12-23 00:34:41,733 [P9868/D7/T140] INFO  Umbraco.Core.Security.BackOfficeSignInManager - Event Id: 0, state: Login attempt succeeded for username abright2012@gmail.com from IP address ::1
+ 2016-12-23 00:34:41,735 [P9868/D7/T140] INFO  Umbraco.Core.Security.BackOfficeSignInManager - Event Id: 0, state: User: abright2012@gmail.com logged in from IP address ::1
+ 2016-12-23 00:34:42,160 [P9868/D7/T94] INFO  Umbraco.Core.PluginManager - Starting resolution types of Umbraco.Web.Trees.TreeController
+ 2016-12-23 00:34:42,163 [P9868/D7/T94] INFO  Umbraco.Core.PluginManager - Completed resolution of types of Umbraco.Web.Trees.TreeController, found 0 (took 2ms)
+ 2016-12-23 00:34:42,334 [P9868/D7/T94] INFO  Umbraco.Core.PluginManager - Starting resolution types of umbraco.interfaces.IApplication
+ 2016-12-23 00:34:42,336 [P9868/D7/T94] INFO  Umbraco.Core.PluginManager - Completed resolution of types of umbraco.interfaces.IApplication, found 0 (took 1ms)
+ 2016-12-23 00:34:42,406 [P9868/D7/T108] INFO  Umbraco.Core.PluginManager - Starting resolution types of umbraco.interfaces.ITree
+ 2016-12-23 00:34:42,410 [P9868/D7/T108] INFO  Umbraco.Core.PluginManager - Completed resolution of types of umbraco.interfaces.ITree, found 0 (took 4ms)
+ 2016-12-23 00:34:42,477 [P9868/D7/T108] INFO  Umbraco.Core.PluginManager - Starting resolution types of Umbraco.Web.Trees.TreeController
+ 2016-12-23 00:34:42,480 [P9868/D7/T108] INFO  Umbraco.Core.PluginManager - Completed resolution of types of Umbraco.Web.Trees.TreeController, found 0 (took 2ms)
+ 2016-12-23 00:34:42,494 [P9868/D7/T108] INFO  Umbraco.Core.PluginManager - Starting resolution types of umbraco.interfaces.ITree
+ 2016-12-23 00:34:42,497 [P9868/D7/T108] INFO  Umbraco.Core.PluginManager - Completed resolution of types of umbraco.interfaces.ITree, found 0 (took 3ms)
+ 2016-12-23 00:36:03,817 [P9868/D7/T124] INFO  Umbraco.Core.Publishing.PublishingStrategy - Content 'Dairy Farm' with Id '1406' has been published.
+ 2016-12-23 00:36:04,737 [P9868/D7/T124] INFO  Umbraco.Core.PluginManager - Starting resolution types of umbraco.interfaces.ICacheRefresher
+ 2016-12-23 00:36:04,767 [P9868/D7/T124] INFO  Umbraco.Core.PluginManager - Completed resolution of types of umbraco.interfaces.ICacheRefresher, found 0 (took 29ms)
+ 2016-12-23 00:36:09,348 [P9868/D7/T122] INFO  umbraco.content - Save Xml to file...
+ 2016-12-23 00:36:09,370 [P9868/D7/T122] INFO  umbraco.content - Saved Xml to file.
+ 2016-12-23 00:42:31,434 [P9868/D7/T98] INFO  Umbraco.Core.PluginManager - Starting resolution types of Umbraco.Web.Trees.TreeController
+ 2016-12-23 00:42:31,435 [P9868/D7/T98] INFO  Umbraco.Core.PluginManager - Completed resolution of types of Umbraco.Web.Trees.TreeController, found 0 (took 0ms)
+ 2016-12-23 00:43:51,567 [P9868/D7/T127] INFO  Umbraco.Core.Publishing.PublishingStrategy - Content 'Church Road' with Id '1408' has been published.
+ 2016-12-23 00:43:56,344 [P9868/D7/T124] INFO  umbraco.content - Save Xml to file...
+ 2016-12-23 00:43:56,358 [P9868/D7/T124] INFO  umbraco.content - Saved Xml to file.

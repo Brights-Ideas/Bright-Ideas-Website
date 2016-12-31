@@ -2226,7 +2226,7 @@ header.navbar nav > div > ul > li .sub-menu li.menu-item-has-children .sub-menu 
   #property-items.list li .property-item {
     background-color: #fff;
   }
-  #property-items.list li .property-item .property-thumbnail {
+  #property-items.list section .property-item .property-thumbnail {
     float: left;
     width: 40%;
   }
@@ -2613,11 +2613,11 @@ header.navbar nav > div > ul > li .sub-menu li.menu-item-has-children .sub-menu 
 .property-search-form {
   position: relative;
   z-index: 2;
-  /*margin-bottom: 50px;
-  padding: 30px 30px 10px;*/
-  padding: 5px 0 0 5px;
+  margin-bottom: 50px;
+  /*padding: 30px 30px 10px;*/
+  padding: 5px;
   background-color: #F58220;
-  display: flex;
+  /*display: flex;*/
 }
 .property-search-form input:not([type=submit]),
 .property-search-form select,
@@ -2876,29 +2876,29 @@ body.page-template-template-property-search-php .property-search-form {
 .search-results-header .search-results-view i.active {
   color: #999999;
 }
-[data-view="list-view"] li {
+[data-view="list-view"] section { /*li {*/
   width: 100%;
   font-size: 1em;
 }
-[data-view="list-view"] li .property-item {
+[data-view="list-view"] section .property-item {
   overflow: hidden;
 }
 @media (min-width: 992px) {
-  [data-view="list-view"] li .property-item {
+  [data-view="list-view"] section .property-item {
     background-color: #fff;
   }
-  [data-view="list-view"] li .property-item .property-thumbnail {
+  [data-view="list-view"] section .property-item .property-thumbnail {
     float: left;
     width: 40%;
   }
-  [data-view="list-view"] li .property-item .title {
+  [data-view="list-view"] section .property-item .title {
     font-size: 1.4em;
   }
-  [data-view="list-view"] li .property-item .property-content {
+  [data-view="list-view"] section .property-item .property-content {
     float: left;
     width: 60%;
   }
-  [data-view="list-view"] li .property-item .property-content .property-price {
+  [data-view="list-view"] section .property-item .property-content .property-price {
     position: absolute;
     bottom: 0;
     left: 40%;

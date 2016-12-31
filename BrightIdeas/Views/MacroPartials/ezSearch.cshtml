@@ -22,7 +22,7 @@
         SearchPropertyStatuses = statusTypes,
         //SearchTerm = CleanseSearchTerm(("" + Request["q"]).ToLower(CultureInfo.InvariantCulture)),
         SearchTerms = new Dictionary<string, string>(),
-        Location = Request["Location"],//.ToLower(CultureInfo.InvariantCulture),
+        Location = "" + Request["Location"],//.ToLower(CultureInfo.InvariantCulture),
 
         MinPrice = Convert.ToInt32(Request["MinPrice"]),
         MaxPrice = Convert.ToInt32(Request["MaxPrice"]),
@@ -220,10 +220,11 @@
 
 @helper RenderForm(SearchViewModel model)
 {
-    <form action="" method="GET" class="property-search-form ezsearch-form">
+
+    <form action="" method="GET" class="property-search-form form-inline ezsearch-form">
 
         <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
-            <select name="Location" class="selectpicker">
+            <select name="Location" class="form-control selectpicker">
                 <option value="0">Any Location</option>
                 <option value="1">
                     Benwick
@@ -364,7 +365,7 @@
             </select>
         </div>
         <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
-            <select name="Type" id="PropertyType" class="form-control">
+            <select name="Type" id="PropertyType" class="form-control selectpicker">
                 <option value="all">Any Type</option>
                 <option value="bungalow">
                     Bungalow
@@ -420,7 +421,7 @@
             </select>
         </div>
 
-        <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
+        <div class="col-xs-12 col-sm-4 col-md-2 form-group select">
             <select name="Status" id="PropertyStatus" class="selectpicker form-control">
                 <option value="all">Any Status</option>
                 <option value="for-sale">
@@ -435,41 +436,64 @@
             </select>
 
         </div>
-        @*<div class="row">*@
-        <div class="col-xs-12 col-sm-4 col-md-3 form-group">
-            <input type="submit" value="@(GetDictionaryValue("[ezSearch] Search", "Search"))" class="btn btn-primary form-control" />
-        </div>
-
-        @*</div>*@
-        @*<div class="col-xs-12 col-sm-4 col-md-3 form-group select">
-               <select name="q" id="" class="form-control">
-                @foreach (var status in model.SearchPropertyStatuses)
-                {
-                    <option selected="@(status.Value == model.SearchPropertyStatus ? "selected" : " ")" value="@status.Value">@status.Text</option>
-                }
-                </select>
-
-            </div>*@
+        
+        <input type="submit" value="@(GetDictionaryValue("[ezSearch] Search", "Search"))" class="btn btn-primary" />
         @*<input type="text" name="q" placeholder="@(GetDictionaryValue("[ezSearch] Search", "Search"))" value="@(model.SearchTerm)" />*@
 
     </form>
+    
 }
 
 @helper RenderSummary(SearchViewModel model)
 {
-    <div class="ezsearch-summary">
-        <p>@FormatHtml(GetDictionaryValue("[ezSearch] Summary", "Your search for <strong>\"{0}\"</strong> matched <strong>{1}</strong> page(s)."), model.SearchTerm, model.TotalResults)</p>
-    </div>
+    <div class="ezsearch-summary container">
+        <h2 class="page-title">
+            @FormatHtml(GetDictionaryValue("[ezSearch] Summary", "Search Results (<span>{0}</span>)"), " ", model.TotalResults)</h2>
+        <h2 class="page-title">Search Results (<span>94</span>)</h2>
+        <div class="search-results-header clearfix">
+            <div class="search-results-view">
+                <a href="#" class="switcher" data-view="grid-view" data-original-title="Grid View"><i class="fa fa-th-large"></i> Grid</a>
+                <a href="#" class="switcher" data-view="list-view" data-original-title="List View"><i class="fa fa-th-list"></i></a>
+                <a href="#"><i class="fa fa-map-marker" aria-hidden="true"></i> Map</a>
+            </div>
+            <div class="search-results-order clearfix">
+                <div class="form-group select">
+                    <select name="order-by" id="orderby" class="form-control">
+                        <option value="price-high">Sort by Price (Highest First)</option>
+                        <option value="price-low">Sort by Price (Lowest First)</option>
+                        <option value="name-asc">Sort by Name (ascending)</option>
+                        <option value="name-desc">Sort by Name (descending)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <p>@FormatHtml(GetDictionaryValue("[ezSearch] Summary", "Your search for matched <strong>{1}</strong> Propertie(s)."), model.SearchTerm, model.TotalResults)</p>
+            <br>
+        </div>
+</div>
+    <script type="text/javascript">
+    //    $('.nav-tabs a').on('click',function(e) {
+    //if ($(this).hasClass('grid')) {
+    //            //$('#container ul').removeClass('list').addClass('grid');
+    //            $('section .feature property-item').removeClass('list').addClass('grid');
+
+    //                }
+    //        else if($(this).hasClass('list')) {
+    //            $('#container ul').removeClass('grid').addClass('list');
+    //            }
+    //        });
+    </script>
+
 }
 
 @helper RenderResultsRange(SearchViewModel model)
-{
-var startRecord = ((model.CurrentPage - 1) * model.PageSize) + 1;
+            {
+@*var startRecord = ((model.CurrentPage - 1) * model.PageSize) + 1;
 var endRecord = Math.Min(model.TotalResults, (startRecord - 1) + model.PageSize);
 
     <div class="ezsearch-result-count">
         <p>@FormatHtml(GetDictionaryValue("[ezSearch] Results Range", "Showing results <strong>{0}</strong> to <strong>{1}</strong>."), startRecord, endRecord)</p>
-    </div>
+    </div>*@
 }
 
 @helper RenderResults(SearchViewModel model)
@@ -497,50 +521,58 @@ var endRecord = Math.Min(model.TotalResults, (startRecord - 1) + model.PageSize)
    
         foreach (var field in model.PreviewFields.Where(field => result.HasValue(field)))
             {
-                <section class="4u 12u(narrower) feature property-item">
-                    <div class="image-wrapper first">
-                        <a href="#" class="image featured">
-                            <img src="@result.GetPropertyValue("images")" alt="">
-                            @if (result.GetPropertyValue<string>("availabilty") == "2")
-                            {
-                                <div class="corner_banner"><h2>sold stc</h2></div>
-                            }
-                        </a>
-                    </div>
-                    <header>
-                        <h3>@result.Name</h3>
-                    </header>
-                    <p>We are delighted to offer for sale this immaculately presented and imaginatively extended attractive…</p>
-                    <div class="property-content">
-                        <div class="property-meta">
-                            <div>
-                                <div class="meta-title"><i class="fa fa-camera"></i></div>
-                                <div class="meta-data" title="" data-original-title="Photos">
-                                    1
+                <section class="4u 12u(narrower)">
+                    <div class="property-item featured">
+                        <div class="property-thumbnail">
+                            <div class="image-wrapper first">
+                                <a href="#"> @*class="image featured">*@
+                                    <img src="@result.GetPropertyValue("images")" alt="">
+                                    @if (result.GetPropertyValue<string>("availabilty") == "2")
+                                    {
+                                        <div class="corner_banner"><h2>sold stc</h2></div>
+                                    }
+                                </a>
+                            </div>
+                            @*<header>
+                                <h3>@result.Name</h3>
+                            </header>*@
+                            @*<p>We are delighted to offer for sale this immaculately presented and imaginatively extended attractive…</p>*@
+                        </div>
+                        <div class="property-content">
+                            <div class="property-meta">
+                                    <header>
+                                        <h3>@result.Name</h3>
+                                    </header>
+                                    <p>We are delighted to offer for sale this immaculately presented and imaginatively extended attractive…</p>
+                                <div>
+                                    <div class="meta-title"><i class="fa fa-camera"></i></div>
+                                    <div class="meta-data" title="" data-original-title="Photos">
+                                        1
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="meta-title"><i class="fa fa-bed"></i></div>
+                                    <div class="meta-data" data-toggle="" title="">@result.GetPropertyValue("propertyBedrooms") Bedrooms</div>
+                                </div>
+                                <div>
+                                    <div class="meta-title"><i class="fa fa-bath"></i></div>
+                                    <div class="meta-data" title="">1 Bathroom</div>
+                                </div>
+                                <div>
+                                    <div class="meta-title"><i class="icon icon_floorplan"></i></div>
+                                    <div class="meta-data" title="" data-original-title="Floorplan">
+                                        1
+                                    </div>
                                 </div>
                             </div>
-                            <div>
-                                <div class="meta-title"><i class="fa fa-bed"></i></div>
-                                <div class="meta-data" data-toggle="" title="">@result.GetPropertyValue("propertyBedrooms") Bedrooms</div>
+                            <div class="property-price">
+                                <span class="property-status" data-toggle="" title="" data-original-title="Status">Sold STC</span>
+                                @*<i class="add-to-favorites fa fa-heart-o" data-fav-id="1231" data-toggle="tooltip" title="" data-original-title="Add To Favorites"></i>
+                <i class="fa fa-plus compare-property" data-compare-id="1231" data-toggle="tooltip" title="" data-original-title="Compare"></i>*@
+                                <div class="price-tag">£2100000</div>
                             </div>
-                            <div>
-                                <div class="meta-title"><i class="fa fa-bath"></i></div>
-                                <div class="meta-data" title="">1 Bathroom</div>
-                            </div>
-                            <div>
-                                <div class="meta-title"><i class="icon icon_floorplan"></i></div>
-                                <div class="meta-data" title="" data-original-title="Floorplan">
-                                    1
-                                </div>
-                            </div>
-                        </div>
-                        <div class="property-price">
-                            <span class="property-status" data-toggle="" title="" data-original-title="Status">Sold STC</span>
-                            @*<i class="add-to-favorites fa fa-heart-o" data-fav-id="1231" data-toggle="tooltip" title="" data-original-title="Add To Favorites"></i>
-                                <i class="fa fa-plus compare-property" data-compare-id="1231" data-toggle="tooltip" title="" data-original-title="Compare"></i>*@
-                            <div class="price-tag">£2100000</div>
-                        </div>
 
+                        </div>
                     </div>
                 </section>
             }

@@ -14,6 +14,23 @@ namespace BrightIdeas.Controllers
     public class SearchController : Umbraco.Web.Mvc.SurfaceController
     {
 
+        public void Ordering(SearchViewModel properties, string sortOrder)
+        {
+            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "Name_desc" : "";
+            ViewBag.DateSortParm = sortOrder == "Date" ? "Date_desc" : "Date";
+            var students = properties.AllResults;
+            switch (sortOrder)
+            {
+                case "Name_desc":
+                    students = students.OrderByDescending(p => p.Fields["price"]);
+                    break;
+                case "Date":
+                    students = students.OrderBy(s => s.EnrollmentDate);
+                    break;
+            }
+            //return View(students.ToList());
+        }
+
         // GET: Search
         [HttpGet]
         public ActionResult Search()
@@ -83,22 +100,23 @@ namespace BrightIdeas.Controllers
 
                     LogHelper.Debug<string>("[ezSearch] Searching Lucene with the following query: " + query);
 
-                    if (model.PagedResults.Any()) return PartialView("_SearchResultsPartial", model);
+                    //if (model.PagedResults.Any()) return PartialView("_SearchResultsPartial", model);
                     // No results found, so render no results view
-                    if (model.SearchFormLocation != "none")
-                    {
-                        return PartialView("_SearchFormPartial");
-                        //@RenderForm(model)
-                    }
+                    //if (model.SearchFormLocation != "none")
+                    //{
+                    //    return PartialView("_SearchFormPartial");
+                    //    //@RenderForm(model)
+                    //}
                     //@RenderNoResults(model)
 
                     //var contentItem = Umbraco.TypedContent(result.Fields["id"]);
 
-                    return PartialView("_SearchResultsPartial", model);
+                    return PartialView("_SearchResultsPartial", model.AllResults);
                 }
                 catch (Exception ex)
                 {
                     // handle exception
+                    LogHelper.Error<string>("[ezSearch] Searching Lucene with the following query: ", ex);
                 }
             }
             return PartialView("Error");

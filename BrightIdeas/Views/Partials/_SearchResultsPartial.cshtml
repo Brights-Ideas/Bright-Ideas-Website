@@ -2,6 +2,12 @@
 @using Umbraco.Core.Logging
 @using Umbraco.Web.Models
 
+@if (!Model.PagedResults.Any())
+{
+    <div class="ezsearch-no-results">
+        <p>@Html.Raw(string.Format("No results found for search term <strong>{0}</strong>.", Model.SearchTerm))</p>
+    </div>
+}
 @foreach (var field in Model.AllResults) //Model.PreviewFields.Where(field => result.HasValue(field)).OrderBy(r => result.GetPropertyValue<int>("price")))
 {
     <section class="4u 12u(narrower)">

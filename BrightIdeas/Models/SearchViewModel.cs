@@ -9,7 +9,6 @@ namespace BrightIdeas.Models
     public class SearchViewModel
     {
         // Query Parameters
-
         public int MinPrice { get; set; }
         public int MaxPrice { get; set; }
         public string Location { get; set; }
@@ -24,6 +23,7 @@ namespace BrightIdeas.Models
 
         public int PreviewLength { get; set; }
         public int PageSize { get; set; }
+        public string SearchFormLocation { get; set; }
 
         // Results
         public int TotalResults { get; set; }

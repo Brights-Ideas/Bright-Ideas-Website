@@ -1,0 +1,57 @@
+﻿@model BrightIdeas.Models.SearchViewModel
+@using Umbraco.Core.Logging
+@using Umbraco.Web.Models
+
+@foreach (var field in Model.AllResults) //Model.PreviewFields.Where(field => result.HasValue(field)).OrderBy(r => result.GetPropertyValue<int>("price")))
+{
+    <section class="4u 12u(narrower)">
+        <div class="property-item featured">
+            <div class="property-thumbnail">
+                <div class="image-wrapper first">
+                    <a href="#">
+                        @*class="image featured">*@
+                        <img src="@field.Fields["images"].ToString()" alt="">
+                        @if (field.Fields["availability"].ToString() == "2")
+                        {
+                            <div class="corner_banner"><h2>sold stc</h2></div>
+                        }
+                    </a>
+                </div>
+            </div>
+            <div class="property-content">
+                <div class="property-meta">
+                    <header>
+                        @*<h3>@result.Name</h3>*@
+                    </header>
+                    @*<p> @result.GetPropertyValue("mainSummary")</p>*@
+                    <div>
+                        <div class="meta-title"><i class="fa fa-camera"></i></div>
+                        <div class="meta-data" title="" data-original-title="Photos">
+                            @field.Fields["images"].Length
+                        </div>
+                    </div>
+                    <div>
+                        <div class="meta-title"><i class="fa fa-bed"></i></div>
+                        <div class="meta-data" data-toggle="" title="">@field.Fields["propertyBedrooms"] Bedrooms</div>
+                    </div>
+                    <div>
+                        <div class="meta-title"><i class="fa fa-bath"></i></div>
+                        @*<div class="meta-data" title="">@result.GetPropertyValue("propertyBathrooms")  Bathroom</div>*@
+                    </div>
+                    <div>
+                        <div class="meta-title"><i class="icon icon_floorplan"></i></div>
+                        <div class="meta-data" title="" data-original-title="Floorplan">
+                            1
+                        </div>
+                    </div>
+                </div>
+                <div class="property-price">
+                    <span class="property-status" data-toggle="" title="" data-original-title="Status">Sold STC</span>
+
+                    @*<div class="price-tag">£ @result.GetPropertyValue("price")</div>*@
+                </div>
+
+            </div>
+        </div>
+    </section>
+}

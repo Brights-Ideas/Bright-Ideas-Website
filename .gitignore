@@ -245,3 +245,4 @@ ModelManifest.xml
 .fake/
 BrightIdeas/App_Data/Logs/UmbracoTraceLog.freelance-pc.txt
 *.del
+BrightIdeas/App_Data/Logs/UmbracoTraceLog.ICN-DEV03.txt

@@ -6,17 +6,14 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Umbraco.Core;
+using Umbraco.Core.Logging;
 using UmbracoExamine;
 
 namespace BrightIdeas.Controllers
 {
     public class SearchController : Umbraco.Web.Mvc.SurfaceController
     {
-        private void init()
-        {
-            //initDictionaryLookup();
-            //ExamineManager.Instance.IndexProviderCollection[Helpers]
-        }
+
         // GET: Search
         [HttpGet]
         public ActionResult Search()
@@ -25,35 +22,77 @@ namespace BrightIdeas.Controllers
         }
 
         [HttpPost]
-        public ActionResult Search(string query)
+        public ActionResult Search(SearchViewModel model)
         {
-            if (query != null)
+            if (model.SearchTerm != null)
             {
                 try
                 {
                     int parsedInt;
                     //var searchlist = rep.Search(query);
 
-                    var model = new SearchViewModel()
+                    //var model = new SearchViewModel()
+                    //{
+                    //    //SearchTerms = new Dictionary<string, string>(),
+                    //    Location = "" + Request["Location"],//.ToLower(CultureInfo.InvariantCulture),
+                    //    MinPrice = Convert.ToInt32(Request["MinPrice"]),
+                    //    MaxPrice = Convert.ToInt32(Request["MaxPrice"]),
+
+                    //    CurrentPage = int.TryParse(Request["p"], out parsedInt) ? parsedInt : 1,
+                    model.CurrentPage = int.TryParse(Request["p"], out parsedInt) ? parsedInt : 1;
+                    //    PageSize = 9,
+                    //    RootContentNodeId = 1402,
+                    //    PreviewLength = 250,
+                    //    //HideFromSearchField = GetMacroParam(Model, "hideFromSearchField", "umbracoNaviHide"),
+                    //    SearchFormLocation = "top"
+                    //};
+
+                    // Perform the search
+                    var searcher = ExamineManager.Instance.CreateSearchCriteria();
+
+                    var query = searcher.NodeTypeAlias("umbPropertyDetails");
+
+                    query.And().Field("regionID", model.Location);
+                    
+                    if (model.MinPrice >= 0 && model.MaxPrice > 0)
                     {
-                        //NewsList = new List<NewsViewModel>()
-                        //SearchTerms = new Dictionary<string, string>(),
-                        Location = "" + Request["Location"],//.ToLower(CultureInfo.InvariantCulture),
-                        MinPrice = Convert.ToInt32(Request["MinPrice"]),
-                        MaxPrice = Convert.ToInt32(Request["MaxPrice"]),
+                        var paddedLower = model.MinPrice.ToString("D6");
+                        var paddedHigher = model.MaxPrice.ToString("D6");
 
-                        CurrentPage = int.TryParse(Request["p"], out parsedInt) ? parsedInt : 1,
+                        query.And().Range("price", paddedLower, paddedHigher, true, true);
+                    }
 
-                        PageSize = 9,
-                        RootContentNodeId = 1402,
-                        //RootMediaNodeId = GetMacroParam(Model, "rootMediaNodeId", s => int.Parse(s), -1),
-                        //IndexType = GetMacroParam(Model, "indexType", s => s.ToLower(CultureInfo.InvariantCulture), ""),
-                        //SearchFields = GetMacroParam(Model, "searchFields", s => SplitToList(s), new List<string> { "nodeName", "metaTitle", "metaDescription", "metaKeywords", "bodyText" }),
-                        //PreviewFields = GetMacroParam(Model, "previewFields", s => SplitToList(s), new List<string> { "bodyText" }),
-                        PreviewLength = 250,
-                        //HideFromSearchField = GetMacroParam(Model, "hideFromSearchField", "umbracoNaviHide"),
-                        //SearchFormLocation = "top"
-                    };
+                    var results = ExamineManager.Instance.Search(query.Compile()).Where(x => (
+                        !Umbraco.IsProtected(int.Parse(x.Fields["id"]), x.Fields["path"]) ||
+                        (
+                            Umbraco.IsProtected(int.Parse(x.Fields["id"]), x.Fields["path"]) &&
+                            Umbraco.MemberHasAccess(int.Parse(x.Fields["id"]), x.Fields["path"])
+                        )) && (
+                            (x.Fields["__IndexType"] == IndexTypes.Content && Umbraco.TypedContent(int.Parse(x.Fields["id"])) != null) ||
+                            (x.Fields["__IndexType"] == IndexTypes.Media && Umbraco.TypedMedia(int.Parse(x.Fields["id"])) != null)
+                        ))
+                    .ToList();
+
+                    model.AllResults = results;
+                    model.TotalResults = results.Count;
+                    model.TotalPages = (int)Math.Ceiling((decimal)model.TotalResults / model.PageSize);
+                    model.CurrentPage = Math.Max(1, Math.Min(model.TotalPages, model.CurrentPage));
+
+                    // Page the results
+                    model.PagedResults = model.AllResults.Skip(model.PageSize * (model.CurrentPage - 1)).Take(model.PageSize);
+
+                    LogHelper.Debug<string>("[ezSearch] Searching Lucene with the following query: " + query);
+
+                    if (model.PagedResults.Any()) return PartialView("_SearchResultsPartial", model);
+                    // No results found, so render no results view
+                    if (model.SearchFormLocation != "none")
+                    {
+                        return PartialView("_SearchFormPartial");
+                        //@RenderForm(model)
+                    }
+                    //@RenderNoResults(model)
+
+                    //var contentItem = Umbraco.TypedContent(result.Fields["id"]);
 
                     return PartialView("_SearchResultsPartial", model);
                 }
@@ -64,28 +103,40 @@ namespace BrightIdeas.Controllers
             }
             return PartialView("Error");
         }
-        //public ActionResult Index(string sortOrder)
+
+        //public ActionResult RenderResults(SearchViewModel model)
         //{
-        //    ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-        //    ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
-        //var students = from s in db.Students
-        //select s;
-        //switch (sortOrder)
+        //    //< div class="ezsearch-results container features">
+        //    //<div class="row">
+        //    foreach(var result in model.PagedResults)
+        //    {
+        //        switch (result.Fields["__IndexType"])
+        //        {
+        //            case UmbracoExamine.IndexTypes.Content:
+        //                var contentItem = Umbraco.TypedContent(result.Fields["id"]);
+        //                    //@RenderContentResult(model, contentItem)
+        //                    //return PartialView("_SearchResultsPartial", model, contentItem);
+        //                    break;
+        //            case UmbracoExamine.IndexTypes.Media:
+        //                var mediaItem = Umbraco.TypedMedia(result.Fields["id"]);
+        //                    //return PartialView("_SearchResultsPartial", model);
+        //                    //@RenderMediaResult(model, mediaItem)
+        //                    break;
+        //        }
+        //    }
+
+        //    return View();
+        //    //</div>
+        //    //</div>
+        //}
+
+        //public ActionResult RenderNoResults(SearchViewModel model)
         //{
-        //    case "name_desc":
-        //        students = students.OrderByDescending(s => s.LastName);
-        //        break;
-        //    case "Date":
-        //        students = students.OrderBy(s => s.EnrollmentDate);
-        //        break;
-        //    case "date_desc":
-        //        students = students.OrderByDescending(s => s.EnrollmentDate);
-        //        break;
-        //    default:
-        //        students = students.OrderBy(s => s.LastName);
-        //        break;
+        //    //< div class="ezsearch-no-results">
+        //        //<p>@FormatHtml(GetDictionaryValue("[ezSearch] No Results", "No results found for search term <strong>{0}</strong>."), model.SearchTerm)</p>
+        //    //</div>
+        //    return View();
         //}
-        //return View(students.ToList());
-        //}
+
     }
 }

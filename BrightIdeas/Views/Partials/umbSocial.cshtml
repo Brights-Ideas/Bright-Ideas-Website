@@ -1,4 +1,4 @@
-@inherits UmbracoTemplatePage
+﻿@inherits UmbracoTemplatePage
 @{
     // Model.Content is the current page that we're on
     // AncestorsOrSelf is all of the ancestors this page has in the tree
@@ -16,7 +16,7 @@
     @RenderLinkIfNotEmpty(homePage.LinkedinLink, "linkedin", "LinkedIn")
 </ul>
 
-<ul class="contact">
+@*<ul class="contact">
 	<li>
 	<h3>Mail</h3>
 		<p><a href="mailto:@homePage.EmailAddress?Subject=Contact">@homePage.EmailAddress</a></p>
@@ -25,7 +25,7 @@
 	<h3>Phone</h3>
 		<p>@homePage.Phone</p>
 	</li>
-</ul>
+</ul>*@
 @helper RenderLinkIfNotEmpty(dynamic link, string cssClass, string linkName)
 {
     // A helper function is handy when you have to do the same thing over and over again

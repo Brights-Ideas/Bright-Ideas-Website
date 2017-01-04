@@ -424,17 +424,21 @@
         <div class="col-xs-12 col-sm-4 col-md-2 form-group select">
             <select name="Status" id="PropertyStatus" class="selectpicker form-control">
                 <option value="all">Any Status</option>
-                <option value="for-sale">
+                <option value="2">
                     For Sale
                 </option>
-                <option value="sold">
+                <option value="5">
                     Sold!
                 </option>
                 <option value="to-let">
                     To Let
                 </option>
             </select>
-
+            @*1 = On Hold  
+              2 = For Sale 
+              3 = Under Offer 
+              4 = Sold STC 5 = Sold 7 = Withdrawn*@
+            
         </div>
         
         <input type="submit" value="@(GetDictionaryValue("[ezSearch] Search", "Search"))" class="btn btn-primary" />
@@ -448,26 +452,25 @@
 {
     <div class="ezsearch-summary container">
         <h2 class="page-title">
-            @FormatHtml(GetDictionaryValue("[ezSearch] Summary", "Search Results (<span>{0}</span>)"), " ", model.TotalResults)</h2>
-        <h2 class="page-title">Search Results (<span>94</span>)</h2>
+            @Html.Raw(String.Format("Search Results (<span>{0}</span>)", model.TotalResults))</h2>
         <div class="search-results-header clearfix">
             <div class="search-results-view">
                 <a href="#" class="switcher" data-view="grid-view" data-original-title="Grid View"><i class="fa fa-th-large"></i> Grid</a>
-                <a href="#" class="switcher" data-view="list-view" data-original-title="List View"><i class="fa fa-th-list"></i></a>
-                <a href="#"><i class="fa fa-map-marker" aria-hidden="true"></i> Map</a>
+                <a href="#" class="switcher" data-view="list-view" data-original-title="List View"><i class="fa fa-th-list"></i> List</a>
+                <a href="/map"><i class="fa fa-map-marker" aria-hidden="true"></i> Map</a>
             </div>
             <div class="search-results-order clearfix">
                 <div class="form-group select">
                     <select name="order-by" id="orderby" class="form-control">
                         <option value="price-high">Sort by Price (Highest First)</option>
                         <option value="price-low">Sort by Price (Lowest First)</option>
-                        <option value="name-asc">Sort by Name (ascending)</option>
-                        <option value="name-desc">Sort by Name (descending)</option>
+                        @*<option value="name-asc">Sort by Name (ascending)</option>
+                        <option value="name-desc">Sort by Name (descending)</option>*@
                     </select>
                 </div>
             </div>
             
-            <p>@FormatHtml(GetDictionaryValue("[ezSearch] Summary", "Your search for matched <strong>{1}</strong> Propertie(s)."), model.SearchTerm, model.TotalResults)</p>
+            @*<p>@FormatHtml(GetDictionaryValue("[ezSearch] Summary", "Your search for matched <strong>{1}</strong> Propertie(s)."), model.SearchTerm, model.TotalResults)</p>*@
             <br>
         </div>
 </div>
@@ -498,84 +501,81 @@ var endRecord = Math.Min(model.TotalResults, (startRecord - 1) + model.PageSize)
 
 @helper RenderResults(SearchViewModel model)
 {
-    <div class="ezsearch-results row features">
-        @foreach (var result in model.PagedResults)
-        {
-            switch (result.Fields["__IndexType"])
+    <div class="ezsearch-results container features">
+        <div class="row">
+            @foreach (var result in model.PagedResults)
             {
-                case UmbracoExamine.IndexTypes.Content:
-                    var contentItem = Umbraco.TypedContent(result.Fields["id"]);
-                    @RenderContentResult(model, contentItem)
-                    break;
-                case UmbracoExamine.IndexTypes.Media:
-                    var mediaItem = Umbraco.TypedMedia(result.Fields["id"]);
-                    @RenderMediaResult(model, mediaItem)
-                    break;
+                switch (result.Fields["__IndexType"])
+                {
+                    case UmbracoExamine.IndexTypes.Content:
+                        var contentItem = Umbraco.TypedContent(result.Fields["id"]);
+                        @RenderContentResult(model, contentItem)
+                        break;
+                    case UmbracoExamine.IndexTypes.Media:
+                        var mediaItem = Umbraco.TypedMedia(result.Fields["id"]);
+                        @RenderMediaResult(model, mediaItem)
+                        break;
+                }
             }
-        }
+        </div>
     </div>
 }
 
 @helper RenderContentResult(SearchViewModel model, IPublishedContent result)
 {
-   
-        foreach (var field in model.PreviewFields.Where(field => result.HasValue(field)))
-            {
-                <section class="4u 12u(narrower)">
-                    <div class="property-item featured">
-                        <div class="property-thumbnail">
-                            <div class="image-wrapper first">
-                                <a href="#"> @*class="image featured">*@
-                                    <img src="@result.GetPropertyValue("images")" alt="">
-                                    @if (result.GetPropertyValue<string>("availabilty") == "2")
-                                    {
-                                        <div class="corner_banner"><h2>sold stc</h2></div>
-                                    }
-                                </a>
-                            </div>
-                            @*<header>
-                                <h3>@result.Name</h3>
-                            </header>*@
-                            @*<p>We are delighted to offer for sale this immaculately presented and imaginatively extended attractive…</p>*@
-                        </div>
-                        <div class="property-content">
-                            <div class="property-meta">
-                                    <header>
-                                        <h3>@result.Name</h3>
-                                    </header>
-                                    <p>We are delighted to offer for sale this immaculately presented and imaginatively extended attractive…</p>
-                                <div>
-                                    <div class="meta-title"><i class="fa fa-camera"></i></div>
-                                    <div class="meta-data" title="" data-original-title="Photos">
-                                        1
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="meta-title"><i class="fa fa-bed"></i></div>
-                                    <div class="meta-data" data-toggle="" title="">@result.GetPropertyValue("propertyBedrooms") Bedrooms</div>
-                                </div>
-                                <div>
-                                    <div class="meta-title"><i class="fa fa-bath"></i></div>
-                                    <div class="meta-data" title="">1 Bathroom</div>
-                                </div>
-                                <div>
-                                    <div class="meta-title"><i class="icon icon_floorplan"></i></div>
-                                    <div class="meta-data" title="" data-original-title="Floorplan">
-                                        1
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="property-price">
-                                <span class="property-status" data-toggle="" title="" data-original-title="Status">Sold STC</span>
-                                @*<i class="add-to-favorites fa fa-heart-o" data-fav-id="1231" data-toggle="tooltip" title="" data-original-title="Add To Favorites"></i>
-                <i class="fa fa-plus compare-property" data-compare-id="1231" data-toggle="tooltip" title="" data-original-title="Compare"></i>*@
-                                <div class="price-tag">£2100000</div>
-                            </div>
 
+foreach (var field in model.PreviewFields.Where(field => result.HasValue(field)).OrderBy(r => result.GetPropertyValue<int>("price")))
+{
+        <section class="4u 12u(narrower)">
+            <div class="property-item featured">
+                <div class="property-thumbnail">
+                    <div class="image-wrapper first">
+                        <a href="#"> @*class="image featured">*@
+                            <img src="@result.GetPropertyValue("images")" alt="">
+                            @if (result.GetPropertyValue<string>("availability") == "2")
+                            {
+                                <div class="corner_banner"><h2>sold stc</h2></div>
+                            }
+                        </a>
+                    </div>
+                </div>
+                <div class="property-content">
+                    <div class="property-meta">
+                            <header>
+                                <h3>@result.Name</h3>
+                            </header>
+                            <p> @result.GetPropertyValue("mainSummary")</p>
+                        <div>
+                            <div class="meta-title"><i class="fa fa-camera"></i></div>
+                            <div class="meta-data" title="" data-original-title="Photos">
+                                1
+                            </div>
+                        </div>
+                        <div>
+                            <div class="meta-title"><i class="fa fa-bed"></i></div>
+                            <div class="meta-data" data-toggle="" title="">@result.GetPropertyValue("propertyBedrooms") Bedrooms</div>
+                        </div>
+                        <div>
+                            <div class="meta-title"><i class="fa fa-bath"></i></div>
+                            <div class="meta-data" title="">@result.GetPropertyValue("propertyBathrooms")  Bathroom</div>
+                        </div>
+                        <div>
+                            <div class="meta-title"><i class="icon icon_floorplan"></i></div>
+                            <div class="meta-data" title="" data-original-title="Floorplan">
+                                1
+                            </div>
                         </div>
                     </div>
-                </section>
-            }
+                    <div class="property-price">
+                        <span class="property-status" data-toggle="" title="" data-original-title="Status">Sold STC</span>
+                        
+                        <div class="price-tag">£ @result.GetPropertyValue("price")</div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    }
 
         @*<h2><a href="@result.Url">@result.Name</a></h2>
             @foreach (var field in model.PreviewFields.Where(field => result.HasValue(field)))

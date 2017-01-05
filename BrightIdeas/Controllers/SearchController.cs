@@ -25,7 +25,7 @@ namespace BrightIdeas.Controllers
                     students = students.OrderByDescending(p => p.Fields["price"]);
                     break;
                 case "Date":
-                    students = students.OrderBy(s => s.EnrollmentDate);
+                    //students = students.OrderBy(s => s.EnrollmentDate);
                     break;
             }
             //return View(students.ToList());

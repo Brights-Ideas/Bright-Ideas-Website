@@ -246,3 +246,5 @@ ModelManifest.xml
 BrightIdeas/App_Data/Logs/UmbracoTraceLog.freelance-pc.txt
 *.del
 BrightIdeas/App_Data/Logs/UmbracoTraceLog.ICN-DEV03.txt
+BrightIdeas/App_Data/Logs/UmbracoTraceLog.freelance-pc.txt.2017-01-03
+*.2017-01-04

@@ -1,0 +1,181 @@
+﻿@inherits UmbracoTemplatePage
+@{
+    Layout = "Velocity.cshtml";
+
+    // If the editor has not explicitly provided the "Page title" property page
+    // then just show the name of the page otherwise show the provided title
+    var pageTitle = string.IsNullOrWhiteSpace(CurrentPage.Title)
+        ? CurrentPage.Name
+        : CurrentPage.Title;
+}
+
+<div class="container-fluid header-margin">
+    <div class="content-wrapper">
+        <div class="item-container">
+            <div class="container">
+                <div class="col-md-12">
+                    <div class="product col-md-3 service-image-left">
+
+                        <center>
+                            <img id="item-display" src="@CurrentPage.Images" alt="" />
+                        </center>
+                    </div>
+
+                    <div class="container service1-items col-sm-2 col-md-2 pull-left">
+                        <center>
+                            <a id="item-1" class="service1-item">
+                                <img src="http://www.corsair.com/Media/catalog/product/g/s/gs600_psu_sideview_blue_2.png" alt=""></img>
+                            </a>
+                            <a id="item-2" class="service1-item">
+                                <img src="http://www.corsair.com/Media/catalog/product/g/s/gs600_psu_sideview_blue_2.png" alt=""></img>
+                            </a>
+                            <a id="item-3" class="service1-item">
+                                <img src="http://www.corsair.com/Media/catalog/product/g/s/gs600_psu_sideview_blue_2.png" alt=""></img>
+                            </a>
+                        </center>
+                    </div>
+                </div>
+
+                <div class="col-md-7">
+                    <div class="product-title">Corsair GS600 600 Watt PSU</div>
+                    <div class="product-desc">The Corsair Gaming Series GS600 is the ideal price/performance choice for mid-spec gaming PC</div>
+                    <div class="product-rating"><i class="fa fa-star gold"></i> <i class="fa fa-star gold"></i> <i class="fa fa-star gold"></i> <i class="fa fa-star gold"></i> <i class="fa fa-star-o"></i> </div>
+                    <hr>
+                    <div class="product-price">$ 1234.00</div>
+                    <div class="product-stock">In Stock</div>
+                    <hr>
+
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="col-md-12 product-info">
+                <ul id="myTab" class="nav nav-tabs nav_tabs">
+
+                    <li class="active"><a href="#service-one" data-toggle="tab">DESCRIPTION</a></li>
+                    <li><a href="#service-two" data-toggle="tab">PRODUCT INFO</a></li>
+                    <li><a href="#service-three" data-toggle="tab">LOCATION</a></li>
+
+                </ul>
+                <div id="myTabContent" class="tab-content">
+                    <div class="tab-pane fade in active" id="service-one">
+
+                        <section class="container product-info">
+                            The Corsair Gaming Series GS600 power supply is the ideal price-performance solution for building or upgrading a Gaming PC. A single +12V rail provides up to 48A of reliable, continuous power for multi-core gaming PCs with multiple graphics cards. The ultra-quiet, dual ball-bearing fan automatically adjusts its speed according to temperature, so it will never intrude on your music and games. Blue LEDs bathe the transparent fan blades in a cool glow. Not feeling blue? You can turn off the lighting with the press of a button.
+
+                            <h3>Corsair Gaming Series GS600 Features:</h3>
+                            @CurrentPage.fullDescription
+                        </section>
+
+                    </div>
+                    <div class="tab-pane fade" id="service-two">
+
+                        <section class="container"></section>
+
+                    </div>
+                    <div class="tab-pane fade" id="service-three">
+                        <div id="map-wrapper">
+                            <div id="google-map"></div>
+                        </div>
+                </div>
+                <hr>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+var map, marker;
+
+function initMap() {
+
+	var mapOptions = {
+	  center: new google.maps.LatLng( 51.5286416,-0.1015987),
+	  zoom: 12,
+	  scrollwheel: false,
+	  streetViewControl: true,
+		disableDefaultUI: true
+	};
+
+	map = new google.maps.Map(document.getElementById('google-map'), mapOptions);
+
+    	var customIcon = new google.maps.MarkerImage(
+		'http://www.tpayneandco.co.uk/wp-content/themes/realty/lib/images/map-marker/map-marker-gold-fat.png',
+		null, // size is determined at runtime
+	  null, // origin is 0,0
+	  null, // anchor is bottom center of the scaled image
+	  new google.maps.Size(50, 69)
+	);
+			var markerClusterOptions = {
+		gridSize: 60, // Default: 60
+		maxZoom: 14,
+		styles: [{
+			width: 50,
+			height: 50,
+			url: "http://www.tpayneandco.co.uk/wp-content/themes/realty/lib/images/map-marker/map-marker-gold-round.png"
+		}]
+	};
+			var marker = new google.maps.Marker({
+    map: map,
+    position: new google.maps.LatLng( 51.5286416,-0.1015987),
+    icon: customIcon,
+    title: 'First Floor Flat &#8211; Close To Town Centre &#8211; One Double Bedroom &#8211; Off Road Parking &#8211; Investment Opportunity – Leasehold &#8211; No Upward Chain',
+		  });
+
+	var propertyThumbnail = '<img width="300" height="225" src="http://www.tpayneandco.co.uk/wp-content/uploads/2015/09/new-300x225.jpg" class="attachment-medium wp-post-image" alt="new" />';
+	var propertyThumbnail=propertyThumbnail.replace(/'/g, '&quot;');
+    var propertyPrice = 'OIEO £70,000';
+    var propertyPrice=propertyPrice.replace(/'/g, '&quot;');
+    var propertyTitle = '<h5 class="title">First Floor Flat &#8211; Close To Town Centre &#8211; One Double Bedroom &#8211; Off Road Parking &#8211; Investment Opportunity – Leasehold &#8211; No Upward Chain</h5>';
+    var propertyTitle=propertyTitle.replace(/'/g, '&quot;');
+	// http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html
+	var infobox = new InfoBox({
+	  content: 	'<div class="map-marker-wrapper">'+
+    						'<div class="map-marker-container">'+
+	    						'<div class="arrow-down"></div>'+
+									propertyThumbnail+
+									'<div class="content">'+
+									propertyTitle+
+									propertyPrice+
+									'</div>'+
+								'</div>'+
+					    '</div>',
+	  disableAutoPan: false,
+	  pixelOffset: new google.maps.Size(-33, -90),
+	  zIndex: null,
+	  alignBottom: true,
+	  closeBoxURL: "http://www.tpayneandco.co.uk/wp-content/themes/realty/lib/images/close.png",
+	  infoBoxClearance: new google.maps.Size(50, 50)
+	});
+		//alert("got latlng");
+	function getLatLng(callback) {
+		latLng = new google.maps.LatLng(@CurrentPage.latitude, @CurrentPage.longitude);
+		callback(latLng);
+	}
+
+  getLatLng(function(latLng) {
+
+	  marker.setPosition(latLng);
+	  map.setCenter(latLng);
+	  map.setZoom(14);
+   	google.maps.event.addListener(marker, 'click', function() {
+	  	infobox.open(map, marker);
+	    map.panTo(latLng);
+		});
+
+  });
+
+	// Maps Fully Loaded: Hide + Remove Spinner
+	google.maps.event.addListenerOnce(map, 'idle', function() {
+		jQuery('.spinner').fadeTo(800, 0.5);
+		setTimeout(function() {
+		  jQuery('.spinner').remove();
+		}, 800);
+	});
+
+
+}
+
+google.maps.event.addDomListener(window, 'load', initMap);
+google.maps.event.addDomListener(window, 'resize', initMap);
+
+</script>

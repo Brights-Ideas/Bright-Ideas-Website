@@ -22,7 +22,7 @@
         SearchPropertyStatuses = statusTypes,
         //SearchTerm = CleanseSearchTerm(("" + Request["q"]).ToLower(CultureInfo.InvariantCulture)),
         SearchTerms = new Dictionary<string, string>(),
-        Location = "" + Request["Location"],//.ToLower(CultureInfo.InvariantCulture),
+        Location = "" + Request["Location"].ToLower(CultureInfo.InvariantCulture),
 
         MinPrice = Convert.ToInt32(Request["MinPrice"]),
         MaxPrice = Convert.ToInt32(Request["MaxPrice"]),
@@ -125,7 +125,10 @@
         //if (searchField != "price")
         //{
         //groupedOr.AppendFormat("{0}:{1}* ", searchField, term.Value);
-        query.And().Field("regionID", model.Location);
+        if (model.Location != "any")
+        {
+            query.And().Field("regionID", model.Location);
+        }
         //}
         if(model.MinPrice >= 0 && model.MaxPrice > 0)//else
         {
@@ -225,14 +228,14 @@
 
         <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
             <select name="Location" class="form-control selectpicker">
-                <option value="0">Any Location</option>
+                <option value="Any">Any Location</option>
                 <option value="1">
                     Benwick
                 </option>
                 <option value="2">
                     Cambridge
                 </option>
-                <option value="3" selected="selected">
+                <option value="7">
                     Chatteris
                 </option>
                 <option value="4">
@@ -530,7 +533,7 @@ foreach (var field in model.PreviewFields.Where(field => result.HasValue(field))
             <div class="property-item featured">
                 <div class="property-thumbnail">
                     <div class="image-wrapper first">
-                        <a href="#"> @*class="image featured">*@
+                        <a href="/properties/@result.Name/"> @*class="image featured">*@
                             <img src="@result.GetPropertyValue("images")" alt="">
                             @if (result.GetPropertyValue<string>("availability") == "2")
                             {
@@ -544,7 +547,7 @@ foreach (var field in model.PreviewFields.Where(field => result.HasValue(field))
                             <header>
                                 <h3>@result.Name</h3>
                             </header>
-                            <p> @result.GetPropertyValue("mainSummary")</p>
+                            <p>@Umbraco.Truncate(result.GetPropertyValue("mainSummary").ToString(), 122)</p>
                         <div>
                             <div class="meta-title"><i class="fa fa-camera"></i></div>
                             <div class="meta-data" title="" data-original-title="Photos">
@@ -600,7 +603,7 @@ foreach (var field in model.PreviewFields.Where(field => result.HasValue(field))
 
 @helper RenderPager(SearchViewModel model)
 {
-    <div class="ezsearch-pager">
+    <div id="pagination" class="ezsearch-pager">
         <p>
             @if (model.CurrentPage > 1)
             {

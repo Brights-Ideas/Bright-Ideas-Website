@@ -276,4 +276,8 @@
     <add type="umbraco.cms.presentation.Trees.UserPermissions, umbraco, Version=1.0.6185.24089, Culture=neutral, PublicKeyToken=null" />
     <add type="umbraco.cms.presentation.Trees.UserTypes, umbraco, Version=1.0.6185.24089, Culture=neutral, PublicKeyToken=null" />
   </baseType>
+  <baseType type="umbraco.cms.businesslogic.macro.IMacroEngine" resolutionType="FindAllTypes">
+    <add type="umbraco.MacroEngines.RazorMacroEngine, umbraco.MacroEngines, Version=1.0.6185.24092, Culture=neutral, PublicKeyToken=null" />
+    <add type="Umbraco.Web.Macros.PartialViewMacroEngine, umbraco, Version=1.0.6185.24089, Culture=neutral, PublicKeyToken=null" />
+  </baseType>
 </plugins>

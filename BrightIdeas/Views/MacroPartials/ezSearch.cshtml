@@ -22,7 +22,7 @@
         SearchPropertyStatuses = statusTypes,
         //SearchTerm = CleanseSearchTerm(("" + Request["q"]).ToLower(CultureInfo.InvariantCulture)),
         SearchTerms = new Dictionary<string, string>(),
-        Location = "" + Request["Location"].ToLower(CultureInfo.InvariantCulture),
+        Location = "" + Request["Location"],//.ToLower(CultureInfo.InvariantCulture),
 
         MinPrice = Convert.ToInt32(Request["MinPrice"]),
         MaxPrice = Convert.ToInt32(Request["MaxPrice"]),
@@ -125,8 +125,9 @@
         //if (searchField != "price")
         //{
         //groupedOr.AppendFormat("{0}:{1}* ", searchField, term.Value);
-        if (model.Location != "any")
+        if (model.Location != "Any")
         {
+
             query.And().Field("regionID", model.Location);
         }
         //}
@@ -228,7 +229,7 @@
 
         <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
             <select name="Location" class="form-control selectpicker">
-                <option value="Any">Any Location</option>
+                <option value="any">Any Location</option>
                 <option value="1">
                     Benwick
                 </option>
@@ -533,7 +534,7 @@ foreach (var field in model.PreviewFields.Where(field => result.HasValue(field))
             <div class="property-item featured">
                 <div class="property-thumbnail">
                     <div class="image-wrapper first">
-                        <a href="/properties/@result.Name/"> @*class="image featured">*@
+                        <a href="../@result.Url"> @*class="image featured">*@
                             <img src="@result.GetPropertyValue("images")" alt="">
                             @if (result.GetPropertyValue<string>("availability") == "2")
                             {
@@ -603,7 +604,7 @@ foreach (var field in model.PreviewFields.Where(field => result.HasValue(field))
 
 @helper RenderPager(SearchViewModel model)
 {
-    <div id="pagination" class="ezsearch-pager">
+    <div class="ezsearch-pager">
         <p>
             @if (model.CurrentPage > 1)
             {

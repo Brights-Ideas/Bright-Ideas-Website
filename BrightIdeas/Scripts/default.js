@@ -5,17 +5,7 @@ var alter = 0;
 
 function initMap() {
 		
-//var	mapOptions = {
-	//center: new google.maps.LatLng(0, 0),
-	//zoom: 14,
-	//scrollwheel: false,
-	//streetViewControl: true,
-	//disableDefaultUI: true,
-	//streetViewControl: true,
-//};
-
-	
-	//map = new google.maps.Map(document.getElementById("map"), mapOptions);
+//map = new google.maps.Map(document.getElementById("map"), mapOptions);
 	map = new google.maps.Map(document.getElementById('map'), {
           zoom: 14,
           center: new google.maps.LatLng(0, 0),

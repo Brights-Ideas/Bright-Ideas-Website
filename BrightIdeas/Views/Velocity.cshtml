@@ -45,7 +45,7 @@
 	
 	<script src="/scripts/jquery.min.js"></script>
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;key=AIzaSyDTAMIml0vjQfOhSlxeEIl3GmMYXbyCTww"></script>
-	<script type="text/javascript" src="/scripts/ajax-favorites-temporary.js"></script>
+	
     <style>
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
@@ -53,6 +53,9 @@
         height: 400px;
 		/*width: 200px;*/
       }
+
+ 	#google-map {height: 400px;}
+        div[id^=google-map] {color: #ed6b25;}
 
 	div[id^=map] #map-marker-container, div[id^=map] .map-marker-container {
 		position: relative;
@@ -93,7 +96,7 @@
       
     </style>
 </head>
-<body onload="initMap()" class="page">
+<body class="page">
 	<header class="navbar">
 	  <div class="container">
 		  <div class="navbar-header">
@@ -119,15 +122,8 @@
 					<div class="clearfix"></div>
 						<nav class="collapse navbar-collapse" role="navigation">
 					<div class="nav navbar-nav">
-						<ul id="menu-nav" class="clearfix">
-							<li id="menu-item-489" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-485 current_page_item menu-item-489">
-								<a href="#">Home</a>
-							</li>
-							<li id="menu-item-299" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-299">
-								<a href="#">View Properties</a>
-							</li>
-							
-						</ul>
+                        @{ Html.RenderPartial("umbTopNavigation"); }
+					
 					</div>				
 					<div id="toggle-navbar"><i class="icon-angle-right"></i></div>
 				</nav>
@@ -135,16 +131,12 @@
 			</div>
 	  </div> 
 </header>
-		<!-- Map -->			
-		@*<div id="map-wrapper">
-			<div id="map"></div>	
-		</div>*@
-		<!-- Main -->
-		<div class="main">
-			@RenderBody()
-		</div>
+	<!-- Main -->
+    <div class="container">
+	    @RenderBody()
+	</div>
 				
-		<!-- Footer -->
+	<!-- Footer -->
 		<footer id="footer">
     			
 			<div id="footer-bottom">
@@ -154,20 +146,22 @@
 						<div class="col-sm-6">		
 							<div id="copyright">&copy; @DateTime.Now.Year @Umbraco.Field("copyright", recursive: true).</div>
 
-						<div class="col-sm-6 social-transparent">
-							@{ Html.RenderPartial("umbSocial"); }
-						</div>
+						    <div class="col-sm-6 social-transparent">
+							    @{ Html.RenderPartial("umbSocial"); }
+						    </div>
 
-					</div>
-				</div>
-			</div>
+					    </div>
+				    </div>
+			    </div>
+            </div>
 
 		</footer>
-		<!-- /Footer -->
-	</div>
+	<!-- /Footer -->
+
 	<!-- jQuery -->
 	<script src="/scripts/jquery.min.js"></script>
 	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
+    <script src="/scripts/url.js"></script>
 	@*<script src="/scripts/jquery.dropotron.min.js"></script>
 	<script src="/scripts/skel.min.js"></script>
 	<script src="/scripts/util.js"></script>*@

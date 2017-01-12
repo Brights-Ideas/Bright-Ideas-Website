@@ -11,10 +11,10 @@
     var menuItems = homePage.Children.Where("UmbracoNaviHide == false");
 }
 
-<nav id="nav">
+@*<nav id="nav">*@
 	@if (homePage.HasProperty("primaryNavigation"))
 	{
-		<ul>
+		<ul id="menu-nav" class="clearfix">
 			@foreach (var item in Umbraco.TypedContent(homePage.GetPropertyValue<string>("primaryNavigation").Split(',')))
 			{
 					@* If the Url of the current page is "/" then we want to add the class "current_page_item" *@
@@ -25,16 +25,12 @@
 				{
 					var selected = Array.IndexOf(Model.Content.Path.Split(','), item.Id.ToString()) >= 0 && item.Level > 1 ? " class=\"current\"" : "";
 					
-					<li @Html.Raw(selected)><a href="@item.Url">@item.Name</a></li>
+					<li class="menu-item menu-item-type-post_type" @Html.Raw(selected)><a href="@item.Url">@item.Name</a></li>
 				}
 			}
 			
-			@if (CurrentPage.DocumentTypeAlias == "umbHomePage")
-			{
-				<li><a href="#work">Work</a></li>
-				<li><a href="#portfolio">Portfolio</a></li>
-			}
+		
 		</ul>
 	}
-</nav>
+
 <!-- /Nav -->

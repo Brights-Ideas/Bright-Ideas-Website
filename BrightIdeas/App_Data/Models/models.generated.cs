@@ -19,7 +19,7 @@ using Umbraco.ModelsBuilder;
 using Umbraco.ModelsBuilder.Umbraco;
 
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "654fcba486ddf946")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "8fcea83c784f81c")]
 [assembly:System.Reflection.AssemblyVersion("0.0.0.2")]
 
 namespace Umbraco.Web.PublishedContentModels
@@ -982,7 +982,7 @@ namespace Umbraco.Web.PublishedContentModels
 		}
 
 		///<summary>
-		/// Availability: The availability of the property for example To Let and Let. Which corresponds to the lookups below: 1 = On Hold 2 = To Let 3 = References Pending 4 = Let Agreed 5 = Let 6 = Withdrawn
+		/// Availability: Of the property for example For Sale or Sold STC corresponds to the below: 1 = On Hold 2 = For Sale 3 = Under Offer     4 = Sold STC     5 = Sold 7 = Withdrawn
 		///</summary>
 		[ImplementPropertyType("availability")]
 		public string Availability
@@ -1036,6 +1036,15 @@ namespace Umbraco.Web.PublishedContentModels
 		}
 
 		///<summary>
+		/// Images Media
+		///</summary>
+		[ImplementPropertyType("imagesMedia")]
+		public string ImagesMedia
+		{
+			get { return this.GetPropertyValue<string>("imagesMedia"); }
+		}
+
+		///<summary>
 		/// Main Summary
 		///</summary>
 		[ImplementPropertyType("mainSummary")]
@@ -1066,9 +1075,9 @@ namespace Umbraco.Web.PublishedContentModels
 		/// Property Bedrooms
 		///</summary>
 		[ImplementPropertyType("propertyBedrooms")]
-		public string PropertyBedrooms
+		public int PropertyBedrooms
 		{
-			get { return this.GetPropertyValue<string>("propertyBedrooms"); }
+			get { return this.GetPropertyValue<int>("propertyBedrooms"); }
 		}
 
 		///<summary>
@@ -1117,7 +1126,7 @@ namespace Umbraco.Web.PublishedContentModels
 		}
 
 		///<summary>
-		/// Property Tenure: Property tenure. Indicates the tenure of the property. It is a numeric value:                                          0 = Not Specified 1 = Freehold 2 = Leasehold 3 = Commonhold 4 = Share of Freehold 5 = Flying Freehold 6 = Share Transfer 7 = Unknown
+		/// Property Tenure: Indicates the tenure of the property. It is a numeric value:                                          0 = Not Specified 1 = Freehold 2 = Leasehold 3 = Commonhold 4 = Share of Freehold 5 = Flying Freehold 6 = Share Transfer 7 = Unknown
 		///</summary>
 		[ImplementPropertyType("propertyTenure")]
 		public string PropertyTenure
@@ -1126,7 +1135,7 @@ namespace Umbraco.Web.PublishedContentModels
 		}
 
 		///<summary>
-		/// Property Type
+		/// Property Type: 1   Houses  2   Flats / Apartments  3   Bungalows  4   Other
 		///</summary>
 		[ImplementPropertyType("propertyType")]
 		public string PropertyType
@@ -1246,6 +1255,15 @@ namespace Umbraco.Web.PublishedContentModels
 		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<UmbHomePage, TValue>> selector)
 		{
 			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
+		}
+
+		///<summary>
+		/// Primary Navigation
+		///</summary>
+		[ImplementPropertyType("primaryNavigation")]
+		public string PrimaryNavigation
+		{
+			get { return this.GetPropertyValue<string>("primaryNavigation"); }
 		}
 	}
 

@@ -2614,8 +2614,8 @@ header.navbar nav > div > ul > li .sub-menu li.menu-item-has-children .sub-menu 
   position: relative;
   z-index: 2;
   margin-bottom: 50px;
-  /*padding: 30px 30px 10px;*/
-  padding: 5px;
+  padding: 30px 30px 10px;
+  /*padding: 5px;*/
   background-color: #F58220;
   /*display: flex;*/
 }
@@ -6000,7 +6000,7 @@ https://wordpress.org/plugins/wordpress-social-login/
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
 }
-.row > * {
+.ezsearch-results .row > * {
     padding: 50px 0 0 50px;
 }
 .features {

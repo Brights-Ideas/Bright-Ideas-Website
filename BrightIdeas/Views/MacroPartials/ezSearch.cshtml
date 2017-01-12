@@ -1,4 +1,4 @@
-@using System.Globalization
+ï»¿@using System.Globalization
 @using System.Text
 @using System.Text.RegularExpressions
 @using Examine
@@ -24,8 +24,10 @@
         SearchTerms = new Dictionary<string, string>(),
         Location = "" + Request["Location"],//.ToLower(CultureInfo.InvariantCulture),
 
+        MinBedrooms = Convert.ToInt32(Request["minimumBedrooms"]),
         MinPrice = Convert.ToInt32(Request["MinPrice"]),
         MaxPrice = Convert.ToInt32(Request["MaxPrice"]),
+        SortOrder = "" + Request["orderby"],
         SearchTerm = "(Location=" + Request["Location"] + ")" + "(MinPrice=" + Request["MinPrice"] + ")" + "(MaxPrice=" + Request["MaxPrice"] + ")",
 
         CurrentPage = int.TryParse(Request["p"], out parsedInt) ? parsedInt : 1,
@@ -89,10 +91,9 @@
         // Perform the search
         var searcher = ExamineManager.Instance.CreateSearchCriteria();
         //var searcher = ExamineManager.Instance.SearchProviderCollection["InternalSearcher"];
-        //var criteria = searcher.CreateSearchCriteria();
         var query = searcher.NodeTypeAlias("umbPropertyDetails"); //new StringBuilder();
-        //query.AppendFormat("-{0}:1 ", model.HideFromSearchField);
-        //query.Not().Field("umbracoNaviHide", "1");
+                                                                  //query.AppendFormat("-{0}:1 ", model.HideFromSearchField);
+                                                                  //query.Not().Field("umbracoNaviHide", "1");
 
         // Set search path
         var contentPathFilter = model.RootContentNodeId > 0
@@ -117,31 +118,41 @@
         //}
 
         // Ensure page contains all search terms in some way
-        //foreach (var term in model.SearchTerms)
-        //{
-        //var groupedOr = criteria.NodeTypeAlias("PropertyDetail"); //new StringBuilder();
-        //foreach (var searchField in model.SearchFields)
-        //{
-        //if (searchField != "price")
-        //{
         //groupedOr.AppendFormat("{0}:{1}* ", searchField, term.Value);
-        if (model.Location != "Any")
+        if (model.Location != "any")
         {
-
             query.And().Field("regionID", model.Location);
         }
-        //}
-        if(model.MinPrice >= 0 && model.MaxPrice > 0)//else
+
+        if (model.MinPrice >= 0 && model.MaxPrice > 0)
         {
             var paddedLower = model.MinPrice.ToString("D6");
             var paddedHigher = model.MaxPrice.ToString("D6");
             //groupedOr.AppendFormat(String.Format(searchField + ":[{0} TO {1}]", model.MinPrice, model.MaxPrice));
             query.And().Range("price", paddedLower, paddedHigher, true, true);
         }
-        //}
-        //query.Append("+(" + groupedOr.ToString() + ") ");
-        //}
 
+        if (model.MinBedrooms > 0)
+        {
+            query.And().Field("propertyBedrooms", model.MinBedrooms.ToString());
+        }
+
+        if (!string.IsNullOrEmpty(model.SortOrder))
+        {
+            switch (model.SortOrder)
+            {
+                case "price-low":
+                    query.And().OrderByDescending(new string[] { "price" });
+                    break;
+                case "price-high":
+                    query.And().OrderBy(new string[] { "price" });
+                    break;
+                default:
+                    query.And().OrderBy(new string[] { "price" });
+                    break;
+            }
+        }
+        
         // Rank content based on positon of search terms in fields
         //for (var i = 0; i < model.SearchFields.Count; i++)
         //{
@@ -152,28 +163,43 @@
         //    }
         //}
 
-        //var criteria2 = criteria.RawQuery(query.ToString());
-
         var results = ExamineManager.Instance.Search(query.Compile()) //searcher.Search(criteria2)
-           .Where(x => (
-                !Umbraco.IsProtected(int.Parse(x.Fields["id"]), x.Fields["path"]) ||
-                (
-                    Umbraco.IsProtected(int.Parse(x.Fields["id"]), x.Fields["path"]) &&
-                    Umbraco.MemberHasAccess(int.Parse(x.Fields["id"]), x.Fields["path"])
-                )) && (
-                    (x.Fields["__IndexType"] == UmbracoExamine.IndexTypes.Content && Umbraco.TypedContent(int.Parse(x.Fields["id"])) != null) ||
-                    (x.Fields["__IndexType"] == UmbracoExamine.IndexTypes.Media && Umbraco.TypedMedia(int.Parse(x.Fields["id"])) != null)
-                ))
-            .ToList();
+        .Where(x => (
+             !Umbraco.IsProtected(int.Parse(x.Fields["id"]), x.Fields["path"]) ||
+             (
+                 Umbraco.IsProtected(int.Parse(x.Fields["id"]), x.Fields["path"]) &&
+                 Umbraco.MemberHasAccess(int.Parse(x.Fields["id"]), x.Fields["path"])
+             )) && (
+                 (x.Fields["__IndexType"] == UmbracoExamine.IndexTypes.Content && Umbraco.TypedContent(int.Parse(x.Fields["id"])) != null) ||
+                 (x.Fields["__IndexType"] == UmbracoExamine.IndexTypes.Media && Umbraco.TypedMedia(int.Parse(x.Fields["id"])) != null)
+             ))
+        .ToList();
 
-        model.AllResults = results;
+        //if (!string.IsNullOrEmpty(model.SortOrder))
+        //{
+        //    switch (model.SortOrder)
+        //    {
+        //        case "price-low":
+        //            //query.And().OrderByDescending(new string[] { "price" });
+        //            model.AllResults = results.OrderBy(r => r.Fields, "price" );
+        //            break;
+        //        case "price-high":
+        //            model.AllResults = results.OrderByDescending(r => r.Fields["price"]);
+        //            break;
+        //        default:
+        //            model.AllResults = results.OrderByDescending(r => r.Fields["price"]);
+        //            break;
+        //    }
+        //}
+
+        model.AllResults = results;//.OrderBy(x => x.Fields["price"]);
 
         model.TotalResults = results.Count;
         model.TotalPages = (int)Math.Ceiling((decimal)model.TotalResults / model.PageSize);
         model.CurrentPage = Math.Max(1, Math.Min(model.TotalPages, model.CurrentPage));
 
         // Page the results
-        model.PagedResults = model.AllResults.Skip(model.PageSize * (model.CurrentPage - 1)).Take(model.PageSize);
+        model.PagedResults = model.AllResults.Skip(model.PageSize * (model.CurrentPage - 1)).Take(model.PageSize).OrderBy(r => r.Fields["price"]);
 
         LogHelper.Debug<string>("[ezSearch] Searching Lucene with the following query: " + query.ToString());
 
@@ -224,239 +250,194 @@
 
 @helper RenderForm(SearchViewModel model)
 {
+    @*<form action="" method="GET" class="property-search-form form-inline ezsearch-form">*@
+    <form class="property-search-form ezsearch-form" action="">
+        <div class="row">
 
-    <form action="" method="GET" class="property-search-form form-inline ezsearch-form">
+            <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
+                <select name="Location" class="form-control selectpicker">
+                    <option value="any">Any Location</option>
+                    <option value="2">
+                        Benwick
+                    </option>
+                    <option value="1">
+                        Wisbech
+                    </option>
+                    <option value="7">
+                        Chatteris
+                    </option>
+                    <option value="4">
+                        Doddington
+                    </option>
+                    <option value="3">
+                        Ely
+                    </option>
+                    <option value="5">
+                        March
+                    </option>
+                </select>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
+                <select class="selectpicker" placeholder="No Minimum" id="minimumBedrooms" name="minimumBedrooms">
+                    <option value="0">No Minimum</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-4 form-group dropdown-double">
+                <select name="MinPrice" class="selectpicker">
+                    <option value="0">Min Price</option>
+                    <option value="50000">ï¿½50,000</option>
+                    <option value="60000">ï¿½60,000</option>
+                    <option value="70000">ï¿½70,000</option>
+                    <option value="80000">ï¿½80,000</option>
+                    <option value="90000">ï¿½90,000</option>
+                    <option value="100000">ï¿½100,000</option>
+                    <option value="110000">ï¿½110,000</option>
+                    <option value="120000">ï¿½120,000</option>
+                    <option value="125000">ï¿½125,000</option>
+                    <option value="130000">ï¿½130,000</option>
+                    <option value="140000">ï¿½140,000</option>
+                    <option value="150000">ï¿½150,000</option>
+                    <option value="160000">ï¿½160,000</option>
+                    <option value="170000">ï¿½170,000</option>
+                    <option value="175000">ï¿½175,000</option>
+                    <option value="180000">ï¿½180,000</option>
+                    <option value="190000">ï¿½190,000</option>
+                    <option value="200000">ï¿½200,000</option>
+                    <option value="210000">ï¿½210,000</option>
+                    <option value="220000">ï¿½220,000</option>
+                    <option value="230000">ï¿½230,000</option>
+                    <option value="240000">ï¿½240,000</option>
+                    <option value="250000">ï¿½250,000</option>
+                    <option value="260000">ï¿½260,000</option>
+                    <option value="270000">ï¿½270,000</option>
+                    <option value="280000">ï¿½280,000</option>
+                    <option value="290000">ï¿½290,000</option>
+                    <option value="300000">ï¿½300,000</option>
+                    <option value="325000">ï¿½325,000</option>
+                    <option value="350000">ï¿½350,000</option>
+                    <option value="375000">ï¿½375,000</option>
+                    <option value="400000">ï¿½400,000</option>
+                    <option value="425000">ï¿½425,000</option>
+                    <option value="450000">ï¿½450,000</option>
+                    <option value="475000">ï¿½475,000</option>
+                    <option value="500000">ï¿½500,000</option>
+                    <option value="550000">ï¿½550,000</option>
+                    <option value="600000">ï¿½600,000</option>
+                    <option value="650000">ï¿½650,000</option>
+                    <option value="700000">ï¿½700,000</option>
+                    <option value="800000">ï¿½800,000</option>
+                    <option value="900000">ï¿½900,000</option>
+                    <option value="1000000">ï¿½1,000,000</option>
+                    <option value="1250000">ï¿½1,250,000</option>
+                    <option value="1500000">ï¿½1,500,000</option>
+                    <option value="1750000">ï¿½1,750,000</option>
+                    <option value="2000000">ï¿½2,000,000</option>
+                    <option value="2500000">ï¿½2,500,000</option>
+                    <option value="3000000">ï¿½3,000,000</option>
+                    <option value="4000000">ï¿½4,000,000</option>
+                    <option value="5000000">ï¿½5,000,000</option>
+                    <option value="7500000">ï¿½7,500,000</option>
+                    <option value="10000000">ï¿½10,000,000</option>
+                </select>
 
-        <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
-            <select name="Location" class="form-control selectpicker">
-                <option value="any">Any Location</option>
-                <option value="1">
-                    Benwick
-                </option>
-                <option value="2">
-                    Cambridge
-                </option>
-                <option value="7">
-                    Chatteris
-                </option>
-                <option value="4">
-                    Doddington
-                </option>
-                <option value="4">
-                    Ely
-                </option>
-            </select>
-        </div>
-        <div class="col-xs-12 col-sm-4 col-md-3 form-group dropdown-double">
-            <select name="MinPrice" class="selectpicker">
-                <option value="0">Min Price</option>
-                <option value="50000">£50,000</option>
-                <option value="60000">£60,000</option>
-                <option value="70000">£70,000</option>
-                <option value="80000">£80,000</option>
-                <option value="90000">£90,000</option>
-                <option value="100000">£100,000</option>
-                <option value="110000">£110,000</option>
-                <option value="120000">£120,000</option>
-                <option value="125000">£125,000</option>
-                <option value="130000">£130,000</option>
-                <option value="140000">£140,000</option>
-                <option value="150000">£150,000</option>
-                <option value="160000">£160,000</option>
-                <option value="170000">£170,000</option>
-                <option value="175000">£175,000</option>
-                <option value="180000">£180,000</option>
-                <option value="190000">£190,000</option>
-                <option value="200000">£200,000</option>
-                <option value="210000">£210,000</option>
-                <option value="220000">£220,000</option>
-                <option value="230000">£230,000</option>
-                <option value="240000">£240,000</option>
-                <option value="250000">£250,000</option>
-                <option value="260000">£260,000</option>
-                <option value="270000">£270,000</option>
-                <option value="280000">£280,000</option>
-                <option value="290000">£290,000</option>
-                <option value="300000">£300,000</option>
-                <option value="325000">£325,000</option>
-                <option value="350000">£350,000</option>
-                <option value="375000">£375,000</option>
-                <option value="400000">£400,000</option>
-                <option value="425000">£425,000</option>
-                <option value="450000">£450,000</option>
-                <option value="475000">£475,000</option>
-                <option value="500000">£500,000</option>
-                <option value="550000">£550,000</option>
-                <option value="600000">£600,000</option>
-                <option value="650000">£650,000</option>
-                <option value="700000">£700,000</option>
-                <option value="800000">£800,000</option>
-                <option value="900000">£900,000</option>
-                <option value="1000000">£1,000,000</option>
-                <option value="1250000">£1,250,000</option>
-                <option value="1500000">£1,500,000</option>
-                <option value="1750000">£1,750,000</option>
-                <option value="2000000">£2,000,000</option>
-                <option value="2500000">£2,500,000</option>
-                <option value="3000000">£3,000,000</option>
-                <option value="4000000">£4,000,000</option>
-                <option value="5000000">£5,000,000</option>
-                <option value="7500000">£7,500,000</option>
-                <option value="10000000">£10,000,000</option>
-                <option value="15000000">£15,000,000</option>
-                <option value="20000000">£20,000,000</option>
-                <option value="">Min Price</option>
-            </select>
-            <div class="search-form divider">to</div>
-            <select name="MaxPrice" class="selectpicker">
-                <option value="0">Max Price</option>
-                <option value="50000">£50,000</option>
-                <option value="60000">£60,000</option>
-                <option value="70000">£70,000</option>
-                <option value="80000">£80,000</option>
-                <option value="90000">£90,000</option>
-                <option value="100000">£100,000</option>
-                <option value="110000">£110,000</option>
-                <option value="120000">£120,000</option>
-                <option value="125000">£125,000</option>
-                <option value="130000">£130,000</option>
-                <option value="140000">£140,000</option>
-                <option value="150000">£150,000</option>
-                <option value="160000">£160,000</option>
-                <option value="170000">£170,000</option>
-                <option value="175000">£175,000</option>
-                <option value="180000">£180,000</option>
-                <option value="190000">£190,000</option>
-                <option value="200000">£200,000</option>
-                <option value="210000">£210,000</option>
-                <option value="220000">£220,000</option>
-                <option value="230000">£230,000</option>
-                <option value="240000">£240,000</option>
-                <option value="250000">£250,000</option>
-                <option value="260000">£260,000</option>
-                <option value="270000">£270,000</option>
-                <option value="280000">£280,000</option>
-                <option value="290000">£290,000</option>
-                <option value="300000">£300,000</option>
-                <option value="325000">£325,000</option>
-                <option value="350000">£350,000</option>
-                <option value="375000">£375,000</option>
-                <option value="400000">£400,000</option>
-                <option value="425000">£425,000</option>
-                <option value="450000">£450,000</option>
-                <option value="475000">£475,000</option>
-                <option value="500000">£500,000</option>
-                <option value="550000">£550,000</option>
-                <option value="600000">£600,000</option>
-                <option value="650000">£650,000</option>
-                <option value="700000">£700,000</option>
-                <option value="800000">£800,000</option>
-                <option value="900000">£900,000</option>
-                <option value="1000000">£1,000,000</option>
-                <option value="1250000">£1,250,000</option>
-                <option value="1500000">£1,500,000</option>
-                <option value="1750000">£1,750,000</option>
-                <option value="2000000">£2,000,000</option>
-                <option value="2500000">£2,500,000</option>
-                <option value="3000000">£3,000,000</option>
-                <option value="4000000">£4,000,000</option>
-                <option value="5000000">£5,000,000</option>
-                <option value="7500000">£7,500,000</option>
-                <option value="10000000">£10,000,000</option>
-                <option value="15000000">£15,000,000</option>
-                <option value="20000000">£20,000,000</option>
-                <option value="">Max Price</option>
-            </select>
-        </div>
-        <div class="col-xs-12 col-sm-4 col-md-3 form-group select">
-            <select name="Type" id="PropertyType" class="form-control selectpicker">
-                <option value="all">Any Type</option>
-                <option value="bungalow">
-                    Bungalow
-                </option>
-                <option value="cottage">
-                    Cottage
-                </option>
-                <option value="detached-barn-conversion">
-                    Detached Barn Conversion
-                </option>
-                <option value="detached-bungalow">
-                    Detached bungalow
-                </option>
-                <option value="detached-chalet-bungalow">
-                    Detached Chalet Bungalow
-                </option>
-                <option value="detached-house">
-                    Detached House
-                </option>
-                <option value="en-suite">
-                    En-suite
-                </option>
-                <option value="end-terrace">
-                    End Terrace
-                </option>
-                <option value="flats-apartments">
-                    Flats / Apartments
-                </option>
-                <option value="house">
-                    Houses
-                </option>
-                <option value="land">
-                    Land
-                </option>
-                <option value="mid-terrace">
-                    Mid terrace
-                </option>
-                <option value="q-type">
-                    Q type
-                </option>
-                <option value="semi-detached">
-                    Semi detached
-                </option>
-                <option value="semi-detached-barn-conversion">
-                    Semi Detached Barn Conversion
-                </option>
-                <option value="semi-detached-bungalow">
-                    Semi Detached Bungalow
-                </option>
-                <option value="shop">
-                    Shop
-                </option>
-            </select>
+                <div class="search-form divider">to</div>
+
+                <select name="MaxPrice" class="selectpicker">
+                    <option value="0">Max Price</option>
+                    <option value="50000">Â£50,000</option>
+                    <option value="60000">Â£60,000</option>
+                    <option value="70000">Â£70,000</option>
+                    <option value="80000">Â£80,000</option>
+                    <option value="90000">Â£90,000</option>
+                    <option value="100000">Â£100,000</option>
+                    <option value="110000">Â£110,000</option>
+                    <option value="120000">Â£120,000</option>
+                    <option value="125000">Â£125,000</option>
+                    <option value="130000">Â£130,000</option>
+                    <option value="140000">ï¿½140,000</option>
+                    <option value="150000">ï¿½150,000</option>
+                    <option value="160000">ï¿½160,000</option>
+                    <option value="170000">ï¿½170,000</option>
+                    <option value="175000">ï¿½175,000</option>
+                    <option value="180000">ï¿½180,000</option>
+                    <option value="190000">ï¿½190,000</option>
+                    <option value="200000">ï¿½200,000</option>
+                    <option value="210000">ï¿½210,000</option>
+                    <option value="220000">ï¿½220,000</option>
+                    <option value="230000">ï¿½230,000</option>
+                    <option value="240000">ï¿½240,000</option>
+                    <option value="250000">ï¿½250,000</option>
+                    <option value="260000">ï¿½260,000</option>
+                    <option value="270000">ï¿½270,000</option>
+                    <option value="280000">ï¿½280,000</option>
+                    <option value="290000">ï¿½290,000</option>
+                    <option value="300000">ï¿½300,000</option>
+                    <option value="325000">ï¿½325,000</option>
+                    <option value="350000">ï¿½350,000</option>
+                    <option value="375000">ï¿½375,000</option>
+                    <option value="400000">ï¿½400,000</option>
+                    <option value="425000">ï¿½425,000</option>
+                    <option value="450000">ï¿½450,000</option>
+                    <option value="475000">ï¿½475,000</option>
+                    <option value="500000">ï¿½500,000</option>
+                    <option value="550000">ï¿½550,000</option>
+                    <option value="600000">ï¿½600,000</option>
+                    <option value="650000">ï¿½650,000</option>
+                    <option value="700000">ï¿½700,000</option>
+                    <option value="800000">ï¿½800,000</option>
+                    <option value="900000">ï¿½900,000</option>
+                    <option value="1000000">ï¿½1,000,000</option>
+                    <option value="1250000">ï¿½1,250,000</option>
+                    <option value="1500000">ï¿½1,500,000</option>
+                    <option value="1750000">ï¿½1,750,000</option>
+                    <option value="2000000">ï¿½2,000,000</option>
+                    <option value="2500000">ï¿½2,500,000</option>
+                    <option value="3000000">ï¿½3,000,000</option>
+                    <option value="4000000">ï¿½4,000,000</option>
+                    <option value="5000000">ï¿½5,000,000</option>
+                    <option value="7500000">ï¿½7,500,000</option>
+                    <option value="10000000">ï¿½10,000,000</option>
+                </select>
+            </div>
+            @*<div class="col-xs-12 col-sm-4 col-md-3 form-group select">
+                    <select name="" id="" class="form-control">
+                        <option value="all">Any Status</option>
+                        <option value="for-sale">
+                            For Sale
+                        </option>
+                        <option value="sold">
+                            Sold!
+                        </option>
+                        <option value="to-let">
+                            To Let
+                        </option>
+                    </select>
+                </div>*@
+            <div class="col-xs-12 col-sm-4 col-md-3 form-group">
+                <input type="submit" value="@(GetDictionaryValue("[ezSearch] Search", "Search"))" class="btn btn-primary btn-lg btn-block" />
+                @*<input type="text" name="q" placeholder="@(GetDictionaryValue("[ezSearch] Search", "Search"))" value="@(model.SearchTerm)" />*@
+            </div>
+
         </div>
 
-        <div class="col-xs-12 col-sm-4 col-md-2 form-group select">
-            <select name="Status" id="PropertyStatus" class="selectpicker form-control">
-                <option value="all">Any Status</option>
-                <option value="2">
-                    For Sale
-                </option>
-                <option value="5">
-                    Sold!
-                </option>
-                <option value="to-let">
-                    To Let
-                </option>
-            </select>
-            @*1 = On Hold  
-              2 = For Sale 
-              3 = Under Offer 
-              4 = Sold STC 5 = Sold 7 = Withdrawn*@
+        <!-- Default Order: Newest Properties First -->
+        <input type="hidden" name="orderby" value="price-low">
             
-        </div>
-        
-        <input type="submit" value="@(GetDictionaryValue("[ezSearch] Search", "Search"))" class="btn btn-primary" />
-        @*<input type="text" name="q" placeholder="@(GetDictionaryValue("[ezSearch] Search", "Search"))" value="@(model.SearchTerm)" />*@
-
     </form>
-    
+
 }
 
 @helper RenderSummary(SearchViewModel model)
 {
     <div class="ezsearch-summary container">
         <h2 class="page-title">
-            @Html.Raw(String.Format("Search Results (<span>{0}</span>)", model.TotalResults))</h2>
+            @Html.Raw(String.Format("Search Results (<span>{0}</span>)", model.TotalResults))
+        </h2>
         <div class="search-results-header clearfix">
             <div class="search-results-view">
                 <a href="#" class="switcher" data-view="grid-view" data-original-title="Grid View"><i class="fa fa-th-large"></i> Grid</a>
@@ -464,50 +445,69 @@
                 <a href="/map"><i class="fa fa-map-marker" aria-hidden="true"></i> Map</a>
             </div>
             <div class="search-results-order clearfix">
-                <div class="form-group select">
-                    <select name="order-by" id="orderby" class="form-control">
-                        <option value="price-high">Sort by Price (Highest First)</option>
-                        <option value="price-low">Sort by Price (Lowest First)</option>
-                        @*<option value="name-asc">Sort by Name (ascending)</option>
-                        <option value="name-desc">Sort by Name (descending)</option>*@
-                    </select>
-                </div>
+                @*<form>*@
+                    <div class="form-group select">
+                        <select name="orderby" id="orderby" class="selectpicker form-control">
+                            <option value="price-low">Sort by Price (Lowest First)</option>
+                            <option value="price-high">Sort by Price (Highest First)</option>
+                            @*<option value="name-asc">Sort by Name (ascending)</option>
+                                <option value="name-desc">Sort by Name (descending)</option>*@
+                        </select>
+                    </div>
+                @*</form>*@
             </div>
-            
+
             @*<p>@FormatHtml(GetDictionaryValue("[ezSearch] Summary", "Your search for matched <strong>{1}</strong> Propertie(s)."), model.SearchTerm, model.TotalResults)</p>*@
             <br>
         </div>
-</div>
+    </div>
+    
     <script type="text/javascript">
-    //    $('.nav-tabs a').on('click',function(e) {
-    //if ($(this).hasClass('grid')) {
-    //            //$('#container ul').removeClass('list').addClass('grid');
-    //            $('section .feature property-item').removeClass('list').addClass('grid');
+        $(function () {
+            $('#orderby').on('changed.bs.select', function (event) {
+                //var form = $(event.target).parents('form');
+                var currentUrl = window.location.href;
 
-    //                }
-    //        else if($(this).hasClass('list')) {
-    //            $('#container ul').removeClass('grid').addClass('list');
-    //            }
-    //        });
+                var parsedUrl = $.url(currentUrl);
+                var currentOrder = url('?orderby', parsedUrl); //parsedUrl.param('orderby');
+                
+                var newOrder = $(this).val();
+
+                var newUrl = location.href.replace("orderby=" + currentOrder, "orderby=" + newOrder);
+                window.location.href = newUrl;
+                //form.submit();
+				$('option:selected', this).attr('selected', true).siblings().removeAttr('selected');
+            });
+        });
     </script>
-
 }
 
 @helper RenderResultsRange(SearchViewModel model)
-            {
-@*var startRecord = ((model.CurrentPage - 1) * model.PageSize) + 1;
-var endRecord = Math.Min(model.TotalResults, (startRecord - 1) + model.PageSize);
+{
+    @*var startRecord = ((model.CurrentPage - 1) * model.PageSize) + 1;
+        var endRecord = Math.Min(model.TotalResults, (startRecord - 1) + model.PageSize);
 
-    <div class="ezsearch-result-count">
-        <p>@FormatHtml(GetDictionaryValue("[ezSearch] Results Range", "Showing results <strong>{0}</strong> to <strong>{1}</strong>."), startRecord, endRecord)</p>
-    </div>*@
+            <div class="ezsearch-result-count">
+                <p>@FormatHtml(GetDictionaryValue("[ezSearch] Results Range", "Showing results <strong>{0}</strong> to <strong>{1}</strong>."), startRecord, endRecord)</p>
+            </div>*@
 }
 
 @helper RenderResults(SearchViewModel model)
 {
+IEnumerable<SearchResult> sortOrder = model.PagedResults;
+switch (model.SortOrder)
+{
+    case "price-low":
+        sortOrder = model.PagedResults.OrderBy(r => int.Parse(r.Fields["price"]));
+        break;
+    case "price-high":
+        sortOrder = model.PagedResults.OrderByDescending(r => int.Parse(r.Fields["price"]));
+        break;
+}
+
     <div class="ezsearch-results container features">
         <div class="row">
-            @foreach (var result in model.PagedResults)
+            @foreach (var result in sortOrder) //model.PagedResults.OrderByDescending(r => int.Parse(r.Fields["price"])))
             {
                 switch (result.Fields["__IndexType"])
                 {
@@ -527,15 +527,16 @@ var endRecord = Math.Min(model.TotalResults, (startRecord - 1) + model.PageSize)
 
 @helper RenderContentResult(SearchViewModel model, IPublishedContent result)
 {
-
-foreach (var field in model.PreviewFields.Where(field => result.HasValue(field)).OrderBy(r => result.GetPropertyValue<int>("price")))
+//var OrderBy = model.SortOrder ? OrderBy(r => result.GetPropertyValue<int>("price") : OrderByDescen(r => result.GetPropertyValue<int>("price")
+foreach (var field in model.PreviewFields.Where(field => result.HasValue(field)))//.OrderBy(r => result.GetPropertyValue<int>("price")))
 {
         <section class="4u 12u(narrower)">
             <div class="property-item featured">
                 <div class="property-thumbnail">
                     <div class="image-wrapper first">
-                        <a href="../@result.Url"> @*class="image featured">*@
-                            <img src="@result.GetPropertyValue("images")" alt="">
+                        <a href="../@result.Url">
+                            @*class="image featured">*@
+                            <img src="@result.GetPropertyValue(field).ToString()" alt="">
                             @if (result.GetPropertyValue<string>("availability") == "2")
                             {
                                 <div class="corner_banner"><h2>sold stc</h2></div>
@@ -545,10 +546,10 @@ foreach (var field in model.PreviewFields.Where(field => result.HasValue(field))
                 </div>
                 <div class="property-content">
                     <div class="property-meta">
-                            <header>
-                                <h3>@result.Name</h3>
-                            </header>
-                            <p>@Umbraco.Truncate(result.GetPropertyValue("mainSummary").ToString(), 122)</p>
+                        <header>
+                            <h3>@result.GetPropertyValue(field).ToString()</h3>
+                        </header>
+                        <p>@Umbraco.Truncate(result.GetPropertyValue("mainSummary").ToString(), 122)</p>
                         <div>
                             <div class="meta-title"><i class="fa fa-camera"></i></div>
                             <div class="meta-data" title="" data-original-title="Photos">
@@ -572,22 +573,22 @@ foreach (var field in model.PreviewFields.Where(field => result.HasValue(field))
                     </div>
                     <div class="property-price">
                         <span class="property-status" data-toggle="" title="" data-original-title="Status">Sold STC</span>
-                        
-                        <div class="price-tag">£ @result.GetPropertyValue("price")</div>
+
+                        <div class="price-tag">@(String.Format(new CultureInfo("en-GB"), "{0:C}", result.GetPropertyValue("price")) ) </div>
                     </div>
 
                 </div>
             </div>
         </section>
-    }
+}
 
-        @*<h2><a href="@result.Url">@result.Name</a></h2>
-            @foreach (var field in model.PreviewFields.Where(field => result.HasValue(field)))
-            {
-                <p>@Highlight(Truncate(Umbraco.StripHtml(result.GetPropertyValue(field).ToString()), model.PreviewLength), model.SearchTerms)</p>
-                break;
-            }*@
-   
+    @*<h2><a href="@result.Url">@result.Name</a></h2>
+        @foreach (var field in model.PreviewFields.Where(field => result.HasValue(field)))
+        {
+            <p>@Highlight(Truncate(Umbraco.StripHtml(result.GetPropertyValue(field).ToString()), model.PreviewLength), model.SearchTerms)</p>
+            break;
+        }*@
+
 }
 
 @helper RenderMediaResult(SearchViewModel model, IPublishedContent result)
@@ -772,8 +773,10 @@ foreach (var field in model.PreviewFields.Where(field => result.HasValue(field))
         // Query Parameters
         public string SearchPropertyStatus { get; set; }
         public List<SelectListItem> SearchPropertyStatuses { get; set; }
+        public int MinBedrooms { get; set; }
         public int MinPrice { get; set; }
         public int MaxPrice { get; set; }
+        public string SortOrder { get; set; }
         public string Location { get; set; }
         public string SearchTerm { get; set; }
         public Dictionary<string, string> SearchTerms { get; set; }

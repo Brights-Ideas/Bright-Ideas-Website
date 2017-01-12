@@ -476,7 +476,8 @@
                 var newUrl = location.href.replace("orderby=" + currentOrder, "orderby=" + newOrder);
                 window.location.href = newUrl;
                 //form.submit();
-				$('option:selected', this).attr('selected', true).siblings().removeAttr('selected');
+                $('#orderby').selectpicker('val', newOrder);
+				//$('option:selected', this).attr('selected', true).siblings().removeAttr('selected');
             });
         });
     </script>

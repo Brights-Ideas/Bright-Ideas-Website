@@ -463,22 +463,38 @@
     </div>
     
     <script type="text/javascript">
-        $(function () {
+        $(document).ready(function () {
+
             $('#orderby').on('changed.bs.select', function (event) {
-                //var form = $(event.target).parents('form');
+                
                 var currentUrl = window.location.href;
 
-                var parsedUrl = $.url(currentUrl);
-                var currentOrder = url('?orderby', parsedUrl); //parsedUrl.param('orderby');
-                
-                var newOrder = $(this).val();
+                if (currentUrl.indexOf('?' + 'orderby' + '=') != -1) {
 
-                var newUrl = location.href.replace("orderby=" + currentOrder, "orderby=" + newOrder);
-                window.location.href = newUrl;
-                //form.submit();
-                $('#orderby').selectpicker('val', newOrder);
-				//$('option:selected', this).attr('selected', true).siblings().removeAttr('selected');
+                    var parsedUrl = $.url(currentUrl);
+                    var currentOrder = url('?orderby', parsedUrl);
+                    //if (url.match("your string").length > 0) {
+                        var newOrder = $(this).val();
+
+                        var newUrl = location.href.replace("orderby=" + currentOrder, "orderby=" + newOrder);
+                        window.location.href = newUrl;
+                }
+                else
+                {
+                    var params = { 'orderby': $(this).val() };
+                    window.location.href = currentUrl +'?'+ jQuery.param(params);
+                }
+                //$('#orderby').selectpicker('val', newOrder);
+                //$('select[name=orderby]').val($(this).val());
+                //$('.selectpicker').selectpicker('refresh')
             });
+
+            var currentUrl = window.location.href;
+            var parsedUrl = $.url(currentUrl);
+
+            var order = url('?orderby', parsedUrl);//$.url.attr('orderby');//$.url().param('?orderby');
+            $('.selectpicker').val(order);
+            $('.selectpicker').selectpicker('render');
         });
     </script>
 }

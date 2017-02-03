@@ -1,7 +1,6 @@
 ﻿@using System.Globalization
-@using System.Text
+@using System.Linq
 @using System.Text.RegularExpressions
-@using Examine
 @using Umbraco.Core.Logging
 @using Umbraco.Web.Models
 @inherits Umbraco.Web.Macros.PartialViewMacroPage
@@ -465,34 +464,28 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
+            var currentUrl = window.location.href;
+            var parsedUrl = $.url(currentUrl);
+
             $('#orderby').on('changed.bs.select', function (event) {
                 
-                var currentUrl = window.location.href;
+                if (currentUrl.indexOf('orderby' + '=') != -1) {
 
-                if (currentUrl.indexOf('?' + 'orderby' + '=') != -1) {
-
-                    var parsedUrl = $.url(currentUrl);
                     var currentOrder = url('?orderby', parsedUrl);
-                    //if (url.match("your string").length > 0) {
-                        var newOrder = $(this).val();
+                    var newOrder = $(this).val();
 
-                        var newUrl = location.href.replace("orderby=" + currentOrder, "orderby=" + newOrder);
-                        window.location.href = newUrl;
+                    var newUrl = location.href.replace("orderby=" + currentOrder, "orderby=" + newOrder);
+                    window.location.href = newUrl;
                 }
                 else
                 {
                     var params = { 'orderby': $(this).val() };
                     window.location.href = currentUrl +'?'+ jQuery.param(params);
                 }
-                //$('#orderby').selectpicker('val', newOrder);
-                //$('select[name=orderby]').val($(this).val());
-                //$('.selectpicker').selectpicker('refresh')
+
             });
 
-            var currentUrl = window.location.href;
-            var parsedUrl = $.url(currentUrl);
-
-            var order = url('?orderby', parsedUrl);//$.url.attr('orderby');//$.url().param('?orderby');
+            var order = url('?orderby', parsedUrl);
             $('.selectpicker').val(order);
             $('.selectpicker').selectpicker('render');
         });
